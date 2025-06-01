@@ -6,11 +6,11 @@ namespace Orcamentaria.PersonService.Domain.Services
 {
     public interface IContactService
     {
-        Response<IEnumerable<Contact>> GetByPersonId(long personId);
-        Response<Contact> GetById(long id);
-        Task<Response<Contact>> Insert(ContactInsertDTO dto);
-        Task<Response<Contact>> Update(long id, ContactUpdateDTO dto);
-        Response<Contact> Delete(long id);
+        Response<IEnumerable<ContactResponseDTO>> GetByPersonId(long personId);
+        Response<ContactResponseDTO> GetById(long id);
+        Task<Response<ContactResponseDTO>> Insert(ContactInsertDTO dto);
+        Task<Response<ContactResponseDTO>> Update(long id, ContactUpdateDTO dto);
+        Response<ContactResponseDTO> Delete(long id);
 
     }
 }

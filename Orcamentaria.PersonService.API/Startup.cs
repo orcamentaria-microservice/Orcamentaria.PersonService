@@ -8,13 +8,13 @@ using Orcamentaria.PersonService.Domain.Mappers;
 using Orcamentaria.PersonService.Domain.Models;
 using Orcamentaria.PersonService.Domain.Repositories;
 using Orcamentaria.PersonService.Domain.Services;
-using Orcamentaria.PersonService.Domain.Validators;
 using Orcamentaria.Lib.Infrastructure.Contexts;
 using Orcamentaria.PersonService.Infrastructure.Repositories;
 using Orcamentaria.PersonService.Application.Services;
 using Orcamentaria.Lib.Infrastructure.Middlewares;
 using Orcamentaria.Lib.Domain.Contexts;
 using Orcamentaria.PersonService.Infrastructure.Contexts;
+using Orcamentaria.Lib.Domain.Validators;
 
 namespace Orcamentaria.PersonService.API
 {
@@ -99,12 +99,12 @@ namespace Orcamentaria.PersonService.API
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
+            //if (env.IsDevelopment())
+            //{
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Person MS v1"));
                 app.UseDeveloperExceptionPage();
-            }
+            //}
 
             app.UseMiddleware<CompanyMiddleware>();
 

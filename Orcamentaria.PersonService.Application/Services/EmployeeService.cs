@@ -2,12 +2,12 @@
 using Orcamentaria.Lib.Domain.Contexts;
 using Orcamentaria.Lib.Domain.Enums;
 using Orcamentaria.Lib.Domain.Models;
+using Orcamentaria.Lib.Domain.Validators;
 using Orcamentaria.PersonService.Domain.DTOs.Employee;
 using Orcamentaria.PersonService.Domain.Enums;
 using Orcamentaria.PersonService.Domain.Models;
 using Orcamentaria.PersonService.Domain.Repositories;
 using Orcamentaria.PersonService.Domain.Services;
-using Orcamentaria.PersonService.Domain.Validators;
 
 namespace Orcamentaria.PersonService.Application.Services
 {
@@ -30,13 +30,15 @@ namespace Orcamentaria.PersonService.Application.Services
             _mapper = mapper;
         }
 
-        public Response<Employee> GetById(long id)
-            => new Response<Employee>(_repository.GetById(id));
+        public Response<EmployeeResponseDTO> GetById(long id)
+            => new Response<EmployeeResponseDTO>(_mapper.Map<Employee, EmployeeResponseDTO>(_repository.GetById(id)));
 
-        public Response<IEnumerable<Employee>> GetByName(string name)
-            => new Response<IEnumerable<Employee>>(_repository.GetByName(name));
+        public Response<IEnumerable<EmployeeResponseDTO>> GetByName(string name)
+            => new Response<IEnumerable<EmployeeResponseDTO>>(
+                _repository.GetByName(name)
+                .Select(x => _mapper.Map<Employee, EmployeeResponseDTO>(x)));
 
-        public async Task<Response<Employee>> Insert(EmployeeInsertDTO dto)
+        public async Task<Response<EmployeeResponseDTO>> Insert(EmployeeInsertDTO dto)
         {
             var employee = _mapper.Map<EmployeeInsertDTO, Employee>(dto);
 
@@ -46,21 +48,21 @@ namespace Orcamentaria.PersonService.Application.Services
             var result = _validator.ValidateBeforeInsert(employee);
 
             if (!result.IsValid)
-                return new Response<Employee>(result);
+                return new Response<EmployeeResponseDTO>(result);
 
             try
             {
                 var entity = await _repository.Insert(employee);
 
-                return new Response<Employee>(entity);
+                return new Response<EmployeeResponseDTO>(_mapper.Map<Employee, EmployeeResponseDTO>(entity));
             }
             catch (Exception ex)
             {
-                return new Response<Employee>(ResponseErrorEnum.DatabaseError, ex.Message);
+                return new Response<EmployeeResponseDTO>(ResponseErrorEnum.DatabaseError, ex.Message);
             }
         }
 
-        public async Task<Response<Employee>> Update(long id, EmployeeUpdateDTO dto)
+        public async Task<Response<EmployeeResponseDTO>> Update(long id, EmployeeUpdateDTO dto)
         {
             var employee = _mapper.Map<EmployeeUpdateDTO, Employee>(dto);
 
@@ -69,17 +71,17 @@ namespace Orcamentaria.PersonService.Application.Services
             var result = _validator.ValidateBeforeUpdate(employee);
 
             if (!result.IsValid)
-                return new Response<Employee>(result);
+                return new Response<EmployeeResponseDTO>(result);
 
             try
             {
                 var entity = await _repository.Update(id, employee);
 
-                return new Response<Employee>(entity);
+                return new Response<EmployeeResponseDTO>(_mapper.Map<Employee, EmployeeResponseDTO>(entity));
             }
             catch (Exception ex)
             {
-                return new Response<Employee>(ResponseErrorEnum.DatabaseError, ex.Message);
+                return new Response<EmployeeResponseDTO>(ResponseErrorEnum.DatabaseError, ex.Message);
             }
         }
     }

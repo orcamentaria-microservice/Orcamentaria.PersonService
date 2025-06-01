@@ -20,6 +20,13 @@ namespace Orcamentaria.PersonService.Domain.Mappers
                 .ForMember(s => s.ContactDescription, opt => opt.MapFrom(d => d.ContactDescription))
                 .ForMember(s => s.Default, opt => opt.MapFrom(d => d.Default))
                 .ReverseMap();
+
+            CreateMap<ContactResponseDTO, Contact>()
+                .ForMember(s => s.Id, opt => opt.MapFrom(d => d.Id))
+                .ForMember(s => s.ContactDescription, opt => opt.MapFrom(d => d.ContactDescription))
+                .ForMember(s => s.Type, opt => opt.MapFrom(d => d.Type))
+                .ForMember(s => s.Default, opt => opt.MapFrom(d => d.Default))
+                .ReverseMap();
         }
     }
 }

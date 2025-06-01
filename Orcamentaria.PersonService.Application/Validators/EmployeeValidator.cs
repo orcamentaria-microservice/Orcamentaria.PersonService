@@ -1,8 +1,8 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
+using Orcamentaria.Lib.Domain.Validators;
 using Orcamentaria.PersonService.Domain.Models;
 using Orcamentaria.PersonService.Domain.Repositories;
-using Orcamentaria.PersonService.Domain.Validators;
 
 namespace Orcamentaria.PersonService.Application.Validators
 {

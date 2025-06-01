@@ -19,19 +19,19 @@ namespace Orcamentaria.PersonService.API.Controllers.v1
         }
 
         [HttpGet("GetById/{id}")]
-        public Response<Employee> GetById(int id)
+        public Response<EmployeeResponseDTO> GetById(int id)
             => _service.GetById(id);
 
         [HttpGet("GetByName/{name}")]
-        public Response<IEnumerable<Employee>> Get(string name)
+        public Response<IEnumerable<EmployeeResponseDTO>> Get(string name)
             => _service.GetByName(name);
 
         [HttpPost]
-        public async Task<Response<Employee>> Insert([FromBody] EmployeeInsertDTO dto)
+        public async Task<Response<EmployeeResponseDTO>> Insert([FromBody] EmployeeInsertDTO dto)
             => await _service.Insert(dto);
 
         [HttpPut("{id}")]
-        public async Task<Response<Employee>> Update(long id, [FromBody] EmployeeUpdateDTO dto)
+        public async Task<Response<EmployeeResponseDTO>> Update(long id, [FromBody] EmployeeUpdateDTO dto)
             => await _service.Update(id, dto);
     }
 }

@@ -1,8 +1,9 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
+using Orcamentaria.Lib.Domain.Validators;
+using Orcamentaria.PersonService.Domain.Enums;
 using Orcamentaria.PersonService.Domain.Models;
 using Orcamentaria.PersonService.Domain.Repositories;
-using Orcamentaria.PersonService.Domain.Validators;
 
 namespace Orcamentaria.PersonService.Application.Validators
 {
@@ -29,13 +30,14 @@ namespace Orcamentaria.PersonService.Application.Validators
         public ValidationResult ValidateBeforeInsert(Contact entity)
         {
             RuleFor(x => x.Id)
-            .Empty().WithMessage("O {PropertyName} não deve ser informado.");
+                .Empty().WithMessage("O {PropertyName} não deve ser informado.");
 
             RuleFor(x => x.PersonId)
                 .NotNull().WithMessage("O {PropertyName} é obrigatório.");
 
             RuleFor(x => x.Type)
-                .NotEmpty().WithMessage("O {PropertyName} é obrigatório.");
+                .NotEmpty().WithMessage("O {PropertyName} é obrigatório.")
+                .Must(x => Enum.IsDefined(typeof(ContactTypeEnum), x)).WithMessage("O {PropertyName} é inválido.");
 
             RuleFor(x => x.PersonId)
                 .Must((x, cancelation) =>
@@ -54,7 +56,6 @@ namespace Orcamentaria.PersonService.Application.Validators
                     return count < 6;
 
                 }).WithMessage("Limite de cadastrados atingido (6).");
-
 
             return this.Validate(entity);
         }
