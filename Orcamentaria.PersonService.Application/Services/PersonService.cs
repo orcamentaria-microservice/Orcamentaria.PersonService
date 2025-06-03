@@ -7,27 +7,33 @@ using Orcamentaria.PersonService.Domain.DTOs.Person;
 using Orcamentaria.PersonService.Domain.Models;
 using Orcamentaria.PersonService.Domain.Repositories;
 using Orcamentaria.PersonService.Domain.Services;
+using System.Xml.Linq;
 
 namespace Orcamentaria.PersonService.Application.Services
 {
     public class PersonService : IPersonService
     {
-        private readonly ICompanyContext _companyContext;
+        private readonly IUserAuthContext _userAuthContext;
         private readonly IPersonRepository _repository;
         private readonly IValidatorEntity<Person> _validator;
         private readonly IMapper _mapper;
 
         public PersonService(
-            ICompanyContext companyContext,
+            IUserAuthContext userAuthContext,
             IPersonRepository repository, 
             IValidatorEntity<Person> validator,
             IMapper mapper)
         {
-            _companyContext = companyContext;
+            _userAuthContext = userAuthContext;
             _repository = repository;
             _validator = validator;
             _mapper = mapper;
         }
+
+        public Response<IEnumerable<PersonResponseDTO>> GetByCompanyId()
+            => new Response<IEnumerable<PersonResponseDTO>>(
+                _repository.GetByCompanyId()
+                .Select(x => _mapper.Map<Person, PersonResponseDTO>(x)));
 
         public Response<PersonResponseDTO> GetById(long id)
             => new Response<PersonResponseDTO>(
@@ -42,7 +48,7 @@ namespace Orcamentaria.PersonService.Application.Services
         {
             var person = _mapper.Map<PersonInsertDTO, Person>(dto);
 
-            person.CompanyId = _companyContext.CompanyId;
+            person.CompanyId = _userAuthContext.UserCompanyId;
 
             var result = _validator.ValidateBeforeInsert(person);
 

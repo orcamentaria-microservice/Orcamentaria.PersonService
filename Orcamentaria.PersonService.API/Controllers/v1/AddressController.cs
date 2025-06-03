@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Orcamentaria.Lib.Domain.Models;
 using Orcamentaria.PersonService.Domain.DTOs.Address;
-using Orcamentaria.PersonService.Domain.Models;
 using Orcamentaria.PersonService.Domain.Services;
 
 namespace Orcamentaria.PersonService.API.Controllers.v1
@@ -18,23 +18,28 @@ namespace Orcamentaria.PersonService.API.Controllers.v1
             _service = service;
         }
 
-        [HttpGet("GetById/{id}")]
+        [Authorize(Roles = "PERSON:READ")]
+        [HttpGet("GetById/{id}", Name = "AddressGetByName")]
         public Response<AddressResponseDTO> GetById(int id)
             => _service.GetById(id);
 
-        [HttpGet("GetByPersonId/{personId}")]
-        public Response<IEnumerable<AddressResponseDTO>> Get(long personId)
+        [Authorize(Roles = "PERSON:READ")]
+        [HttpGet("GetByPersonId/{personId}", Name = "AddressGetByPersonId")]
+        public Response<IEnumerable<AddressResponseDTO>> GetByPersonId(long personId)
             => _service.GetByPersonId(personId);
 
-        [HttpPost]
+        [Authorize(Roles = "PERSON:INSERT")]
+        [HttpPost(Name = "AddressInsert")]
         public async Task<Response<AddressResponseDTO>> Insert([FromBody] AddressInsertDTO dto)
             => await _service.Insert(dto);
 
-        [HttpPut("{id}")]
+        [Authorize(Roles = "PERSON:UPDATE")]
+        [HttpPut("{id}", Name = "AddressUpdate")]
         public async Task<Response<AddressResponseDTO>> Update(long id, [FromBody] AddressUpdateDTO dto)
             => await _service.Update(id, dto);
 
-        [HttpDelete("{id}")]
+        [Authorize(Roles = "PERSON:DELETE")]
+        [HttpDelete("{id}", Name = "AddressDelete")]
         public Response<AddressResponseDTO> Delete(long id)
             => _service.Delete(id);
     }

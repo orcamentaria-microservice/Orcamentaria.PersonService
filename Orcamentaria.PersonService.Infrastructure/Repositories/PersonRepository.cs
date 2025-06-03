@@ -9,26 +9,32 @@ namespace Orcamentaria.PersonService.Infrastructure.Repositories
     public class PersonRepository : IPersonRepository
     {
         private readonly MySqlContext _dbContext;
-        private readonly ICompanyContext _companyContext;
+        private readonly IUserAuthContext _userAuthContext;
 
-        public PersonRepository(MySqlContext dbContext, ICompanyContext companyContext) 
+        public PersonRepository(MySqlContext dbContext, IUserAuthContext userAuthContext) 
         {
             _dbContext = dbContext;
-            _companyContext = companyContext;
+            _userAuthContext = userAuthContext;
         }
 
         public Person GetById(long id) 
             => _dbContext.Persons
             .Include(x => x.Addresses)
             .Include(x => x.Contacts)
-            .FirstOrDefault(x => x.Id == id && x.CompanyId == _companyContext.CompanyId);
+            .FirstOrDefault(x => x.Id == id && x.CompanyId == _userAuthContext.UserCompanyId);
+        
+        public IEnumerable<Person> GetByCompanyId()
+            => _dbContext.Persons
+                .Include(x => x.Addresses)
+                .Include(x => x.Contacts)
+                .Where(x => x.CompanyId == _userAuthContext.UserCompanyId);
 
         public IEnumerable<Person> GetByName(string name) 
             => _dbContext.Persons
             .Include(x => x.Addresses)
             .Include(x => x.Contacts)
             .Where(x => x.Name.Contains(name, StringComparison.OrdinalIgnoreCase)
-            && x.CompanyId == _companyContext.CompanyId);
+            && x.CompanyId == _userAuthContext.UserCompanyId);
 
         public async Task<Person> Insert(Person person)
         {

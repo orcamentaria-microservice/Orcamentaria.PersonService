@@ -13,18 +13,18 @@ namespace Orcamentaria.PersonService.Application.Services
 {
     public class EmployeeService : IEmployeeService
     {
-        private readonly ICompanyContext _companyContext;
+        private readonly IUserAuthContext _userAuthContext;
         private readonly IEmployeeRepository _repository;
         private readonly IValidatorEntity<Employee> _validator;
         private readonly IMapper _mapper;
 
         public EmployeeService(
-            ICompanyContext companyContext,
+            IUserAuthContext userAuthContext,
             IEmployeeRepository repository, 
             IValidatorEntity<Employee> validator,
             IMapper mapper)
         {
-            _companyContext = companyContext;
+            _userAuthContext = userAuthContext;
             _repository = repository;
             _validator = validator;
             _mapper = mapper;
@@ -32,6 +32,11 @@ namespace Orcamentaria.PersonService.Application.Services
 
         public Response<EmployeeResponseDTO> GetById(long id)
             => new Response<EmployeeResponseDTO>(_mapper.Map<Employee, EmployeeResponseDTO>(_repository.GetById(id)));
+
+        public Response<IEnumerable<EmployeeResponseDTO>> GetByCompanyId()
+            => new Response<IEnumerable<EmployeeResponseDTO>>(
+                _repository.GetByCompanyId()
+                .Select(x => _mapper.Map<Employee, EmployeeResponseDTO>(x)));
 
         public Response<IEnumerable<EmployeeResponseDTO>> GetByName(string name)
             => new Response<IEnumerable<EmployeeResponseDTO>>(
@@ -42,7 +47,7 @@ namespace Orcamentaria.PersonService.Application.Services
         {
             var employee = _mapper.Map<EmployeeInsertDTO, Employee>(dto);
 
-            employee.CompanyId = _companyContext.CompanyId;
+            employee.CompanyId = _userAuthContext.UserCompanyId;
             employee.Type = PersonTypeEnum.Employee;
 
             var result = _validator.ValidateBeforeInsert(employee);

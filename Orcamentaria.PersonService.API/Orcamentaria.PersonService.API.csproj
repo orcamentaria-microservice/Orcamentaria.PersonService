@@ -8,9 +8,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Keys\public_key_user.pem" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Keys\public_key_user.pem" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
-    <PackageReference Include="Orcamentaria.Lib.Infrastructure" Version="1.0.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.1" />
+    <PackageReference Include="Orcamentaria.Lib.Application" Version="1.1.1" />
+    <PackageReference Include="Orcamentaria.Lib.Domain" Version="9.0.5" />
+    <PackageReference Include="Orcamentaria.Lib.Infrastructure" Version="4.1.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -9,31 +9,37 @@ namespace Orcamentaria.PersonService.Infrastructure.Repositories
     public class EmployeeRepository : IEmployeeRepository
     {
         private readonly MySqlContext _dbContext;
-        private readonly ICompanyContext _companyContext;
+        private readonly IUserAuthContext _userAuthContext;
 
-        public EmployeeRepository(MySqlContext dbContext, ICompanyContext companyContext) 
+        public EmployeeRepository(MySqlContext dbContext, IUserAuthContext userAuthContext) 
         {
             _dbContext = dbContext;
-            _companyContext = companyContext;
+            _userAuthContext = userAuthContext;
         }
 
         public Employee GetByRg(string rg)
-            => _dbContext.Employees.FirstOrDefault(x => x.Rg == rg && x.CompanyId == _companyContext.CompanyId);
+            => _dbContext.Employees.FirstOrDefault(x => x.Rg == rg && x.CompanyId == _userAuthContext.UserCompanyId);
 
         public Employee GetByCpf(string cpf) 
-            => _dbContext.Employees.FirstOrDefault(x => x.Cpf == cpf && x.CompanyId == _companyContext.CompanyId);
+            => _dbContext.Employees.FirstOrDefault(x => x.Cpf == cpf && x.CompanyId == _userAuthContext.UserCompanyId);
 
         public Employee GetById(long id) 
             => _dbContext.Employees
             .Include(x => x.Addresses)
             .Include(x => x.Contacts)
-            .FirstOrDefault(x => x.Id == id && x.CompanyId == _companyContext.CompanyId);
+            .FirstOrDefault(x => x.Id == id && x.CompanyId == _userAuthContext.UserCompanyId);
+
+        public IEnumerable<Employee> GetByCompanyId()
+           => _dbContext.Employees
+           .Include(x => x.Addresses)
+           .Include(x => x.Contacts)
+           .Where(x => x.CompanyId == _userAuthContext.UserCompanyId);
 
         public IEnumerable<Employee> GetByName(string name) 
             => _dbContext.Employees
             .Include(x => x.Addresses)
             .Include(x => x.Contacts)
-            .Where(x => x.Name.Contains(name, StringComparison.OrdinalIgnoreCase) && x.CompanyId == _companyContext.CompanyId);
+            .Where(x => x.Name.Contains(name, StringComparison.OrdinalIgnoreCase) && x.CompanyId == _userAuthContext.UserCompanyId);
 
 
         public async Task<Employee> Insert(Employee employee)
@@ -45,7 +51,7 @@ namespace Orcamentaria.PersonService.Infrastructure.Repositories
 
         public async Task<Employee> Update(long id, Employee employee)
         {
-            var entity = _dbContext.Employees.FirstOrDefault(p => p.Id == id && p.CompanyId == _companyContext.CompanyId);
+            var entity = _dbContext.Employees.FirstOrDefault(p => p.Id == id && p.CompanyId == _userAuthContext.UserCompanyId);
 
             if(entity is not null)
             {

@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Orcamentaria.Lib.Domain.Models;
 using Orcamentaria.PersonService.Domain.DTOs.Person;
-using Orcamentaria.PersonService.Domain.Models;
 using Orcamentaria.PersonService.Domain.Services;
 
 namespace Orcamentaria.PersonService.API.Controllers.v1
@@ -18,19 +18,28 @@ namespace Orcamentaria.PersonService.API.Controllers.v1
             _service = service;
         }
 
-        [HttpGet("GetById/{id}")]
+        [Authorize(Roles = "PERSON:READ")]
+        [HttpGet("GetById/{id}", Name = "PersonGetById")]
         public Response<PersonResponseDTO> GetById(int id)
             => _service.GetById(id);
 
-        [HttpGet("GetByName/{name}")]
-        public Response<IEnumerable<PersonResponseDTO>> Get(string name)
+        [Authorize(Roles = "PERSON:READ")]
+        [HttpGet("GetByCompanyId", Name = "PersonGetByCompanyId")]
+        public Response<IEnumerable<PersonResponseDTO>> GetByCompanyId()
+            => _service.GetByCompanyId();
+
+        [Authorize(Roles = "PERSON:READ")]
+        [HttpGet("GetByName/{name}", Name = "PersonGetByName")]
+        public Response<IEnumerable<PersonResponseDTO>> GetByName(string name)
             => _service.GetByName(name);
 
-        [HttpPost]
+        [Authorize(Roles = "PERSON:INSERT")]
+        [HttpPost(Name = "PersonInsert")]
         public async Task<Response<PersonResponseDTO>> Insert([FromBody] PersonInsertDTO dto)
             => await _service.Insert(dto);
 
-        [HttpPut("{id}")]
+        [Authorize(Roles = "PERSON:CREATE")]
+        [HttpPut("{id}", Name = "PersonUpdate")]
         public async Task<Response<PersonResponseDTO>> Update(long id, [FromBody] PersonUpdateDTO dto)
             => await _service.Update(id, dto);
     }

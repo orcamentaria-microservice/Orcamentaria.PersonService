@@ -4,8 +4,6 @@ using Orcamentaria.Lib.Domain.Enums;
 using Orcamentaria.Lib.Domain.Validators;
 using Orcamentaria.PersonService.Domain.Models;
 using Orcamentaria.PersonService.Domain.Repositories;
-using System.Drawing;
-using System.Net.NetworkInformation;
 
 namespace Orcamentaria.PersonService.Application.Validators
 {
