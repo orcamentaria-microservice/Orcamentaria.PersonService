@@ -19,6 +19,7 @@ namespace Orcamentaria.PersonService.API.Controllers.v1
         }
 
         [Authorize(Roles = "PERSON:READ")]
+        [Authorize(Roles = "PERSON:INSERT")]
         [HttpGet("GetById/{id}", Name = "AddressGetByName")]
         public Response<AddressResponseDTO> GetById(int id)
             => _service.GetById(id);

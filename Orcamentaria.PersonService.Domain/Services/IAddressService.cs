@@ -1,6 +1,5 @@
 ﻿using Orcamentaria.Lib.Domain.Models;
 using Orcamentaria.PersonService.Domain.DTOs.Address;
-using Orcamentaria.PersonService.Domain.Models;
 
 namespace Orcamentaria.PersonService.Domain.Services
 {

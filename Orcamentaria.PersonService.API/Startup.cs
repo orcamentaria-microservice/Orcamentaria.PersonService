@@ -11,6 +11,7 @@ using Orcamentaria.Lib.Domain.Contexts;
 using Orcamentaria.PersonService.Infrastructure.Contexts;
 using Orcamentaria.Lib.Domain.Validators;
 using Orcamentaria.Lib.Infrastructure;
+using Orcamentaria.Lib.Domain.Models.Configurations;
 
 namespace Orcamentaria.PersonService.API
 {
@@ -29,8 +30,17 @@ namespace Orcamentaria.PersonService.API
         {
             CommonDI.ResolveCommonServices(_serviceName, _apiVersion, services, Configuration);
 
+            services.Configure<ServiceConfiguration>(Configuration.GetSection("ServiceConfiguration"));
+
+            CommonDI.AddServiceRegistryHosted(services, Configuration);
+
             services.AddDbContext<MySqlContext>(options =>
                 options.UseMySQL(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddSwaggerGen(c =>
+            {
+                c.OperationFilter<AddRoleToSwaggerOperationFilter>();
+            });
 
             services.AddAutoMapper(
                 typeof(PersonMapper), 
@@ -58,5 +68,6 @@ namespace Orcamentaria.PersonService.API
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
             => CommonDI.ConfigureCommon(_serviceName, _apiVersion, app, env);
+
     }
 }

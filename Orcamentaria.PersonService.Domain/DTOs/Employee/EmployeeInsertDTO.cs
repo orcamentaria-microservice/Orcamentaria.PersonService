@@ -1,11 +1,4 @@
-﻿using Orcamentaria.PersonService.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Orcamentaria.PersonService.Domain.DTOs.Employee
+﻿namespace Orcamentaria.PersonService.Domain.DTOs.Employee
 {
     public class EmployeeInsertDTO
     {
