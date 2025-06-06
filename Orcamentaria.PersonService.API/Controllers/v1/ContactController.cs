@@ -21,26 +21,71 @@ namespace Orcamentaria.PersonService.API.Controllers.v1
         [Authorize(Roles = "PERSON:READ")]
         [HttpGet("GetById/{id}", Name = "ContactGetByName")]
         public Response<ContactResponseDTO> GetById(int id)
-            => _service.GetById(id);
+        {
+            try
+            {
+                return _service.GetById(id);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
         [Authorize(Roles = "PERSON:READ")]
         [HttpGet("GetByPersonId/{personId}", Name = "ContactGetByPersonId")]
         public Response<IEnumerable<ContactResponseDTO>> GetByPersonId(long personId)
-            => _service.GetByPersonId(personId);
+        {
+            try
+            {
+                return _service.GetByPersonId(personId);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
         [Authorize(Roles = "PERSON:CREATE")]
         [HttpPost(Name = "ContactInsert")]
         public async Task<Response<ContactResponseDTO>> Insert([FromBody] ContactInsertDTO dto)
-            => await _service.Insert(dto);
+        {
+            try
+            {
+                return await _service.Insert(dto);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
         [Authorize(Roles = "PERSON:UPATE")]
         [HttpPut("{id}", Name = "ContactUpdate")]
         public async Task<Response<ContactResponseDTO>> Update(long id, [FromBody] ContactUpdateDTO dto)
-            => await _service.Update(id, dto);
+        {
+            try
+            {
+                return await _service.Update(id, dto);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
         [Authorize(Roles = "PERSON:DELETE")]
         [HttpDelete("{id}", Name = "ContactDelete")]
         public Response<ContactResponseDTO> Delete(long id)
-            => _service.Delete(id);
+        {
+            try
+            {
+                return _service.Delete(id);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }

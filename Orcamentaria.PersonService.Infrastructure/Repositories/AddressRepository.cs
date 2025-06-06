@@ -1,4 +1,5 @@
-﻿using Orcamentaria.PersonService.Domain.Models;
+﻿using Orcamentaria.Lib.Domain.Exceptions;
+using Orcamentaria.PersonService.Domain.Models;
 using Orcamentaria.PersonService.Domain.Repositories;
 using Orcamentaria.PersonService.Infrastructure.Contexts;
 
@@ -8,55 +9,101 @@ namespace Orcamentaria.PersonService.Infrastructure.Repositories
     {
         private readonly MySqlContext _dbContext;
 
-        public AddressRepository(MySqlContext dbContext) 
+        public AddressRepository(MySqlContext dbContext)
         {
             _dbContext = dbContext;
         }
 
         public int CountItems(long personId)
-            => _dbContext.Addresses.Where(x => x.PersonId == personId).Count();
+        {
+            try
+            {
+                return _dbContext.Addresses.Where(x => x.PersonId == personId).Count();
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException(ex.Message, ex);
+            }
+        }
 
-        public void Delete(Address address) => _dbContext.Addresses.Remove(address);
+        public void Delete(Address address) 
+        {
+            try
+            {
+                _dbContext.Addresses.Remove(address);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException(ex.Message, ex);
+            }
+        } 
 
-        public Address GetById(long id) => _dbContext.Addresses.FirstOrDefault(x => x.Id == id);
+        public Address? GetById(long id)
+        {
+            try
+            {
+                return _dbContext.Addresses.FirstOrDefault(x => x.Id == id);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException(ex.Message, ex);
+            }
+        }
 
         public IEnumerable<Address> GetByPersonId(long personId)
-            => _dbContext.Addresses.Where(x => x.PersonId == personId);
+        {
+            try
+            {
+                return _dbContext.Addresses.Where(x => x.PersonId == personId);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException(ex.Message, ex);
+            }
+        }
 
         public async Task<Address> Insert(Address address)
         {
-            var entity = _dbContext.Addresses.First(x => 
-            x.PersonId == address.PersonId &&
-            x.Default);
-
-            if (entity is not null && address.Default)
+            try
             {
+                if (!address.Default)
+                {
+                    _dbContext.Addresses.Add(address);
+                    await _dbContext.SaveChangesAsync();
+                    return address;
+                }
+                
+                var entity = _dbContext.Addresses.First(x => x.PersonId == address.PersonId && x.Default);
+
+                if (entity is null)
+                    return address;
+
                 entity.Default = false;
                 await _dbContext.SaveChangesAsync();
+                return address;
             }
-
-            _dbContext.Addresses.Add(address);
-            await _dbContext.SaveChangesAsync();
-            return address;
+            catch (Exception ex)
+            {
+                throw new DatabaseException(ex.Message, ex);
+            }
         }
 
         public async Task<Address> Update(long id, Address address)
         {
-            var entity = _dbContext.Addresses.FirstOrDefault(p => p.Id == id);
-            var exists = _dbContext.Addresses.First(x => 
-            x.Id != address.Id && 
-            x.PersonId == entity.PersonId &&
-            x.Default);
-
-            if (exists is not null && address.Default)
+            try
             {
-                exists.Default = false;
-                await _dbContext.SaveChangesAsync();
-            }
+                var entity = _dbContext.Addresses.First(p => p.Id == id);
+                var exists = _dbContext.Addresses.First(x =>
+                x.Id != address.Id &&
+                x.PersonId == entity.PersonId &&
+                x.Default);
 
+                if (exists is not null && address.Default)
+                {
+                    exists.Default = false;
+                    await _dbContext.SaveChangesAsync();
+                }
 
-            if(entity is not null)
-            {
                 entity.Street = address.Street;
                 entity.ZipCode = address.ZipCode;
                 entity.Number = address.Number;
@@ -68,9 +115,13 @@ namespace Orcamentaria.PersonService.Infrastructure.Repositories
                 entity.Default = address.Default;
 
                 await _dbContext.SaveChangesAsync();
-            }
 
-            return entity;
+                return entity;
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException(ex.Message, ex);
+            }
         }
     }
 }

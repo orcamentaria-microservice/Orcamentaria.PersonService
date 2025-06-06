@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Orcamentaria.Lib.Domain.Enums;
+using Orcamentaria.Lib.Domain.Exceptions;
 using Orcamentaria.Lib.Domain.Models;
+using Orcamentaria.Lib.Domain.Models.Exceptions;
 using Orcamentaria.Lib.Domain.Validators;
 using Orcamentaria.PersonService.Domain.DTOs.Address;
 using Orcamentaria.PersonService.Domain.Models;
@@ -27,63 +29,147 @@ namespace Orcamentaria.PersonService.Application.Services
 
         public Response<AddressResponseDTO> Delete(long id)
         {
-            var entity = _repository.GetById(id);
-
-            _repository.Delete(entity);
-
-            return new Response<AddressResponseDTO>();
-        }
-
-        public Response<AddressResponseDTO> GetById(long id)
-            => new Response<AddressResponseDTO>(
-                _mapper.Map<Address, AddressResponseDTO>(_repository.GetById(id)));
-
-        public Response<IEnumerable<AddressResponseDTO>> GetByPersonId(long personId)
-            => new Response<IEnumerable<AddressResponseDTO>>(
-                _repository.GetByPersonId(personId)
-                .Select(x => _mapper.Map<Address, AddressResponseDTO>(x)));
-
-        public async Task<Response<AddressResponseDTO>> Insert(AddressInsertDTO dto)
-        {
-            var address = _mapper.Map<AddressInsertDTO, Address>(dto);
-
-            var result = _validator.ValidateBeforeInsert(address);
-
-            if (!result.IsValid)
-                return new Response<AddressResponseDTO>(result);
-
             try
             {
-                var entity = await _repository.Insert(address);
+                var entity = _repository.GetById(id);
 
-                return new Response<AddressResponseDTO>(_mapper.Map<Address, AddressResponseDTO>(entity));
+                if (entity is null)
+                    throw new InfoException($"O {id} não foi encontrado", ErrorCodeEnum.NotFound);
+
+                _repository.Delete(entity);
+
+                return new Response<AddressResponseDTO>();
+
+            }
+            catch (DatabaseException)
+            {
+                throw;
+            }
+            catch (InfoException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
-                return new Response<AddressResponseDTO>(ResponseErrorEnum.DatabaseError, ex.Message); ;
+                throw new UnexpectedException(ex.Message, ex);
+            }
+        }
+
+        public Response<AddressResponseDTO> GetById(long id)
+        { 
+            try
+            {
+                var data = _repository.GetById(id);
+
+                if(data is null)
+                    throw new InfoException($"O {id} não foi encontrado", ErrorCodeEnum.NotFound);
+
+                return new Response<AddressResponseDTO>(_mapper.Map<Address, AddressResponseDTO>(data));
+            }
+            catch (DatabaseException)
+            {
+                throw;
+            }
+            catch (InfoException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new UnexpectedException(ex.Message, ex);
+            }
+        }
+
+        public Response<IEnumerable<AddressResponseDTO>> GetByPersonId(long personId)
+        {
+            try
+            {
+                var data = _repository.GetByPersonId(personId);
+
+                if (!data.Any())
+                    throw new InfoException($"O {personId} não foi encontrado", ErrorCodeEnum.NotFound);
+
+                return new Response<IEnumerable<AddressResponseDTO>>(
+                    data.Select(x => _mapper.Map<Address, AddressResponseDTO>(x)));
+            }
+            catch (DatabaseException)
+            {
+                throw;
+            }
+            catch (InfoException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new UnexpectedException(ex.Message, ex);
+            }
+        }
+
+        public async Task<Response<AddressResponseDTO>> Insert(AddressInsertDTO dto)
+        {
+            try
+            {
+                var address = _mapper.Map<AddressInsertDTO, Address>(dto);
+
+                var result = _validator.ValidateBeforeInsert(address);
+
+                if (!result.IsValid)
+                    throw new ValidationException(result);
+
+                    var entity = await _repository.Insert(address);
+
+                    return new Response<AddressResponseDTO>(_mapper.Map<Address, AddressResponseDTO>(entity));
+            }
+            catch (DatabaseException)
+            {
+                throw;
+            }
+            catch (ValidationException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new UnexpectedException(ex.Message, ex);
             }
         }
 
         public async Task<Response<AddressResponseDTO>> Update(long id, AddressUpdateDTO dto)
         {
-            var address = _mapper.Map<AddressUpdateDTO, Address>(dto);
-
-            address.Id = id;
-
-            var result = _validator.ValidateBeforeUpdate(address);
-
-            if (!result.IsValid)
-                return new Response<AddressResponseDTO>(result);
-
             try
             {
+                if (_repository.GetById(id) is null)
+                    throw new InfoException($"O {id} não foi encontrado", ErrorCodeEnum.NotFound);
+
+                var address = _mapper.Map<AddressUpdateDTO, Address>(dto);
+
+                address.Id = id;
+
+                var result = _validator.ValidateBeforeUpdate(address);
+
+                if (!result.IsValid)
+                    throw new ValidationException(result);
+
                 var entity = await _repository.Update(id, address);
 
                 return new Response<AddressResponseDTO>(_mapper.Map<Address, AddressResponseDTO>(entity));
             }
+            catch (DatabaseException)
+            {
+                throw;
+            }
+            catch (InfoException)
+            {
+                throw;
+            }
+            catch (ValidationException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
-                return new Response<AddressResponseDTO>(ResponseErrorEnum.DatabaseError, ex.Message);
+                throw new UnexpectedException(ex.Message, ex);
             }
         }
     }

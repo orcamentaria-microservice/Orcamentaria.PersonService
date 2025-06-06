@@ -2,6 +2,7 @@
 using FluentValidation.Results;
 using Orcamentaria.Lib.Domain.Enums;
 using Orcamentaria.Lib.Domain.Validators;
+using Orcamentaria.PersonService.Domain.Enums;
 using Orcamentaria.PersonService.Domain.Models;
 using Orcamentaria.PersonService.Domain.Repositories;
 
@@ -38,7 +39,7 @@ namespace Orcamentaria.PersonService.Application.Validators
                 .WithMessage("O {PropertyName} deve conter apenas números.");
             RuleFor(x => x.Type)
                 .NotEmpty().WithMessage("O {PropertyName} é obrigatório.")
-                .Must(x => Enum.IsDefined(typeof(ResponseErrorEnum), x)).WithMessage("O {PropertyName} é inválido.");
+                .Must(x => Enum.IsDefined(typeof(PersonTypeEnum), x)).WithMessage("O {PropertyName} é inválido.");
             RuleFor(x => x.CompanyId)
                 .NotNull().WithMessage("O {PropertyName} é obrigatório.")
                 .GreaterThan(0).WithMessage("O {PropertyName} é inválido.");

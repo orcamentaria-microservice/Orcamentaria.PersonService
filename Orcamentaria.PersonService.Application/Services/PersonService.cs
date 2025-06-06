@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Orcamentaria.Lib.Domain.Contexts;
 using Orcamentaria.Lib.Domain.Enums;
+using Orcamentaria.Lib.Domain.Exceptions;
 using Orcamentaria.Lib.Domain.Models;
+using Orcamentaria.Lib.Domain.Models.Exceptions;
 using Orcamentaria.Lib.Domain.Validators;
 using Orcamentaria.PersonService.Domain.DTOs.Person;
 using Orcamentaria.PersonService.Domain.Models;
@@ -31,62 +33,144 @@ namespace Orcamentaria.PersonService.Application.Services
         }
 
         public Response<IEnumerable<PersonResponseDTO>> GetByCompanyId()
-            => new Response<IEnumerable<PersonResponseDTO>>(
-                _repository.GetByCompanyId()
-                .Select(x => _mapper.Map<Person, PersonResponseDTO>(x)));
+        {
+            try
+            {
+                var data = _repository.GetByCompanyId();
+
+                if (!data.Any())
+                    throw new InfoException($"Nenhum dado foi encontrado", ErrorCodeEnum.NotFound);
+
+                return new Response<IEnumerable<PersonResponseDTO>>(
+                    data.Select(x => _mapper.Map<Person, PersonResponseDTO>(x)));
+            }
+            catch (DatabaseException)
+            {
+                throw;
+            }
+            catch (InfoException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new UnexpectedException(ex.Message, ex);
+            }
+        }
 
         public Response<PersonResponseDTO> GetById(long id)
-            => new Response<PersonResponseDTO>(
-                _mapper.Map<Person, PersonResponseDTO>(_repository.GetById(id)));
+        {
+            try
+            {
+                var data = _repository.GetById(id);
+
+                if (data is null)
+                    throw new InfoException($"O {id} não foi encontrado", ErrorCodeEnum.NotFound);
+
+                return new Response<PersonResponseDTO>(_mapper.Map<Person, PersonResponseDTO>(data));
+            }
+            catch (DatabaseException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new UnexpectedException(ex.Message, ex);
+            }
+        }
 
         public Response<IEnumerable<PersonResponseDTO>> GetByName(string name)
-            => new Response<IEnumerable<PersonResponseDTO>>(
-                _repository.GetByName(name)
-                .Select(x => _mapper.Map<Person, PersonResponseDTO>(x)));
+        {
+            try
+            {
+                var data = _repository.GetByName(name);
+
+                if (!data.Any())
+                    throw new InfoException($"Nenhum dado foi encontrado", ErrorCodeEnum.NotFound);
+
+                return new Response<IEnumerable<PersonResponseDTO>>(
+                    data.Select(x => _mapper.Map<Person, PersonResponseDTO>(x)));
+            }
+            catch (DatabaseException)
+            {
+                throw;
+            }
+            catch (InfoException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new UnexpectedException(ex.Message, ex);
+            }
+        }
 
         public async Task<Response<PersonResponseDTO>> Insert(PersonInsertDTO dto)
         {
-            var person = _mapper.Map<PersonInsertDTO, Person>(dto);
-
-            person.CompanyId = _userAuthContext.UserCompanyId;
-
-            var result = _validator.ValidateBeforeInsert(person);
-
-            if (!result.IsValid)
-                return new Response<PersonResponseDTO>(result);
-
             try
             {
+                var person = _mapper.Map<PersonInsertDTO, Person>(dto);
+
+                person.CompanyId = _userAuthContext.UserCompanyId;
+
+                var result = _validator.ValidateBeforeInsert(person);
+
+                if (!result.IsValid)
+                    throw new ValidationException(result);
+
                 var entity = await _repository.Insert(person);
 
                 return new Response<PersonResponseDTO>(_mapper.Map<Person, PersonResponseDTO>(entity));
             }
+            catch (DatabaseException)
+            {
+                throw;
+            }
+            catch (ValidationException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
-                return new Response<PersonResponseDTO>(ResponseErrorEnum.DatabaseError, ex.Message);
+                throw new UnexpectedException(ex.Message, ex);
             }
         }
 
         public async Task<Response<PersonResponseDTO>> Update(long id, PersonUpdateDTO dto)
         {
-            var person = _mapper.Map<PersonUpdateDTO, Person>(dto);
-
-            person.Id = id;
-
-            var result = _validator.ValidateBeforeUpdate(person);
-
-            if (!result.IsValid)
-                return new Response<PersonResponseDTO>(result);
-
             try
             {
+                if (_repository.GetById(id) is null)
+                    throw new InfoException($"O {id} não foi encontrado", ErrorCodeEnum.NotFound);
+
+                var person = _mapper.Map<PersonUpdateDTO, Person>(dto);
+
+                person.Id = id;
+
+                var result = _validator.ValidateBeforeUpdate(person);
+
+                if (!result.IsValid)
+                    throw new ValidationException(result);
+
                 var entity = await _repository.Update(id, person);
 
                 return new Response<PersonResponseDTO>(_mapper.Map<Person, PersonResponseDTO>(entity));
             }
+            catch (DatabaseException)
+            {
+                throw;
+            }
+            catch (InfoException)
+            {
+                throw;
+            }
+            catch (ValidationException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
-                return new Response<PersonResponseDTO>(ResponseErrorEnum.DatabaseError, ex.Message);
+                throw new UnexpectedException(ex.Message, ex);
             }
         }
     }

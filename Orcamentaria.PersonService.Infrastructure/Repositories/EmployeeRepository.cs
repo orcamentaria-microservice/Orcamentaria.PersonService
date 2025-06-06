@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Orcamentaria.Lib.Domain.Contexts;
+using Orcamentaria.Lib.Domain.Exceptions;
 using Orcamentaria.PersonService.Domain.Models;
 using Orcamentaria.PersonService.Domain.Repositories;
 using Orcamentaria.PersonService.Infrastructure.Contexts;
@@ -17,44 +18,103 @@ namespace Orcamentaria.PersonService.Infrastructure.Repositories
             _userAuthContext = userAuthContext;
         }
 
-        public Employee GetByRg(string rg)
-            => _dbContext.Employees.FirstOrDefault(x => x.Rg == rg && x.CompanyId == _userAuthContext.UserCompanyId);
+        public Employee? GetByRg(string rg)
+        {
+            try
+            {
+                return _dbContext.Employees
+                    .Include(x => x.Addresses)
+                    .Include(x => x.Contacts)
+                    .FirstOrDefault(x => x.Rg == rg && x.CompanyId == _userAuthContext.UserCompanyId);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException(ex.Message, ex);
+            }
+        }
 
-        public Employee GetByCpf(string cpf) 
-            => _dbContext.Employees.FirstOrDefault(x => x.Cpf == cpf && x.CompanyId == _userAuthContext.UserCompanyId);
+        public Employee? GetByCpf(string cpf)
+        {
+            try
+            {
+                return _dbContext.Employees
+                    .Include(x => x.Addresses)
+                    .Include(x => x.Contacts)
+                    .FirstOrDefault(x => x.Cpf == cpf && x.CompanyId == _userAuthContext.UserCompanyId);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException(ex.Message, ex);
+            }
+        }
 
-        public Employee GetById(long id) 
-            => _dbContext.Employees
-            .Include(x => x.Addresses)
-            .Include(x => x.Contacts)
-            .FirstOrDefault(x => x.Id == id && x.CompanyId == _userAuthContext.UserCompanyId);
+        public Employee? GetById(long id)
+        {
+            try
+            {
+                return _dbContext.Employees
+                    .Include(x => x.Addresses)
+                    .Include(x => x.Contacts)
+                    .FirstOrDefault(x => x.Id == id && x.CompanyId == _userAuthContext.UserCompanyId);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException(ex.Message, ex);
+            }
+        }
 
         public IEnumerable<Employee> GetByCompanyId()
-           => _dbContext.Employees
-           .Include(x => x.Addresses)
-           .Include(x => x.Contacts)
-           .Where(x => x.CompanyId == _userAuthContext.UserCompanyId);
+        {
+            try
+            {
+                return _dbContext.Employees
+                   .Include(x => x.Addresses)
+                   .Include(x => x.Contacts)
+                   .Where(x => x.CompanyId == _userAuthContext.UserCompanyId);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException(ex.Message, ex);
+            }
+        }
 
-        public IEnumerable<Employee> GetByName(string name) 
-            => _dbContext.Employees
-            .Include(x => x.Addresses)
-            .Include(x => x.Contacts)
-            .Where(x => x.Name.Contains(name, StringComparison.OrdinalIgnoreCase) && x.CompanyId == _userAuthContext.UserCompanyId);
-
+        public IEnumerable<Employee> GetByName(string name)
+        {
+            try
+            {
+                return _dbContext.Employees
+                    .Include(x => x.Addresses)
+                    .Include(x => x.Contacts)
+                    .Where(x => x.Name.Contains(name, StringComparison.OrdinalIgnoreCase) 
+                    && x.CompanyId == _userAuthContext.UserCompanyId);
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException(ex.Message, ex);
+            }
+        }
 
         public async Task<Employee> Insert(Employee employee)
         {
-            _dbContext.Employees.Add(employee);
-            await _dbContext.SaveChangesAsync();
-            return employee;
+            try
+            {
+                _dbContext.Employees.Add(employee);
+                await _dbContext.SaveChangesAsync();
+                return employee;
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException(ex.Message, ex);
+            }
         }
 
         public async Task<Employee> Update(long id, Employee employee)
         {
-            var entity = _dbContext.Employees.FirstOrDefault(p => p.Id == id && p.CompanyId == _userAuthContext.UserCompanyId);
-
-            if(entity is not null)
+            try
             {
+                var entity = _dbContext.Employees.First(
+                    x => x.Id == id && x.CompanyId == _userAuthContext.UserCompanyId);
+                
                 entity.Name = employee.Name;
                 entity.Rg = employee.Rg;
                 entity.Cpf = employee.Cpf;
@@ -64,9 +124,13 @@ namespace Orcamentaria.PersonService.Infrastructure.Repositories
                 entity.ValuePerDay = employee.ValuePerDay;
 
                 await _dbContext.SaveChangesAsync();
-            }
 
-            return entity;
+                return entity;
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException(ex.Message, ex);
+            }
         }
     }
 }

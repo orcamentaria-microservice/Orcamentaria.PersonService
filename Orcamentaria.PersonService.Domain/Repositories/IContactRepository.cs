@@ -6,7 +6,7 @@ namespace Orcamentaria.PersonService.Domain.Repositories
     {
         int CountItems(long personId);
         IEnumerable<Contact> GetByPersonId(long personId);
-        Contact GetById(long id);
+        Contact? GetById(long id);
         Task<Contact> Insert(Contact contact);
         Task<Contact> Update(long id, Contact contact);
         void Delete(Contact contact);

@@ -21,26 +21,71 @@ namespace Orcamentaria.PersonService.API.Controllers.v1
         [Authorize(Roles = "PERSON:READ")]
         [HttpGet("GetById/{id}", Name = "EmployeeGetById")]
         public Response<EmployeeResponseDTO> GetById(int id)
-            => _service.GetById(id);
+        {
+            try
+            {
+                return _service.GetById(id);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
         [Authorize(Roles = "PERSON:READ")]
         [HttpGet("GetByCompanyId", Name = "EmployeeGetByCompanyId")]
         public Response<IEnumerable<EmployeeResponseDTO>> GetByCompanyId()
-           => _service.GetByCompanyId();
+        {
+            try
+            {
+                return _service.GetByCompanyId();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
         [Authorize(Roles = "PERSON:READ")]
         [HttpGet("GetByName/{name}", Name = "EmployeeGetByName")]
         public Response<IEnumerable<EmployeeResponseDTO>> GetByName(string name)
-            => _service.GetByName(name);
+        {
+            try
+            {
+                return _service.GetByName(name);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
         [Authorize(Roles = "PERSON:CREATE")]
         [HttpPost(Name = "EmployeeInsert")]
         public async Task<Response<EmployeeResponseDTO>> Insert([FromBody] EmployeeInsertDTO dto)
-            => await _service.Insert(dto);
+        {
+            try
+            {
+                return await _service.Insert(dto);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
         [Authorize(Roles = "PERSON:UPDATE")]
         [HttpPut("{id}", Name = "EmployeeUpdate")]
         public async Task<Response<EmployeeResponseDTO>> Update(long id, [FromBody] EmployeeUpdateDTO dto)
-            => await _service.Update(id, dto);
+        {
+            try
+            {
+                return await _service.Update(id, dto);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }

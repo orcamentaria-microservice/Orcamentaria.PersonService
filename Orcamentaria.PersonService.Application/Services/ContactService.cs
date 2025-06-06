@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
 using Orcamentaria.Lib.Domain.Enums;
+using Orcamentaria.Lib.Domain.Exceptions;
 using Orcamentaria.Lib.Domain.Models;
+using Orcamentaria.Lib.Domain.Models.Exceptions;
 using Orcamentaria.Lib.Domain.Validators;
+using Orcamentaria.PersonService.Domain.DTOs.Address;
 using Orcamentaria.PersonService.Domain.DTOs.Contact;
 using Orcamentaria.PersonService.Domain.Models;
 using Orcamentaria.PersonService.Domain.Repositories;
@@ -27,63 +30,147 @@ namespace Orcamentaria.PersonService.Application.Services
 
         public Response<ContactResponseDTO> Delete(long id)
         {
-            var entity = _repository.GetById(id);
+            try
+            {
+                var entity = _repository.GetById(id);
 
-            _repository.Delete(entity);
+                if (entity is null)
+                    throw new InfoException($"O {id} não foi encontrado", ErrorCodeEnum.NotFound);
 
-            return new Response<ContactResponseDTO>();
+                _repository.Delete(entity);
+
+                return new Response<ContactResponseDTO>();
+
+            }
+            catch (DatabaseException)
+            {
+                throw;
+            }
+            catch (InfoException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new UnexpectedException(ex.Message, ex);
+            }
         }
 
         public Response<ContactResponseDTO> GetById(long id)
-            => new Response<ContactResponseDTO>(
-                _mapper.Map<Contact, ContactResponseDTO>(_repository.GetById(id)));
+        {
+            try
+            {
+                var data = _repository.GetById(id);
+
+                if (data is null)
+                    throw new InfoException($"O {id} não foi encontrado", ErrorCodeEnum.NotFound);
+
+                return new Response<ContactResponseDTO>(_mapper.Map<Contact, ContactResponseDTO>(data));
+            }
+            catch (DatabaseException)
+            {
+                throw;
+            }
+            catch (InfoException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new UnexpectedException(ex.Message, ex);
+            }
+        }
 
         public Response<IEnumerable<ContactResponseDTO>> GetByPersonId(long personId)
-            => new Response<IEnumerable<ContactResponseDTO>>(
-                _repository.GetByPersonId(personId)
-                .Select(x => _mapper.Map<Contact, ContactResponseDTO>(x)));
+        {
+            try
+            {
+                var data = _repository.GetByPersonId(personId);
+
+                if (!data.Any())
+                    throw new InfoException($"O {personId} não foi encontrado", ErrorCodeEnum.NotFound);
+
+                return new Response<IEnumerable<ContactResponseDTO>>(
+                    data.Select(x => _mapper.Map<Contact, ContactResponseDTO>(x)));
+            }
+            catch (DatabaseException)
+            {
+                throw;
+            }
+            catch (InfoException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new UnexpectedException(ex.Message, ex);
+            }
+        }
 
         public async Task<Response<ContactResponseDTO>> Insert(ContactInsertDTO dto)
         {
-            var contact = _mapper.Map<ContactInsertDTO, Contact>(dto);
-
-            var result = _validator.ValidateBeforeInsert(contact);
-
-            if (!result.IsValid)
-                return new Response<ContactResponseDTO>(result);
-
             try
             {
+                var contact = _mapper.Map<ContactInsertDTO, Contact>(dto);
+
+                var result = _validator.ValidateBeforeInsert(contact);
+
+                if (!result.IsValid)
+                    throw new ValidationException(result);
+
                 var entity = await _repository.Insert(contact);
 
                 return new Response<ContactResponseDTO>(_mapper.Map<Contact, ContactResponseDTO>(entity));
             }
+            catch (DatabaseException)
+            {
+                throw;
+            }
+            catch (ValidationException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
-                return new Response<ContactResponseDTO>(ResponseErrorEnum.DatabaseError, ex.Message);
+                throw new UnexpectedException(ex.Message, ex);
             }
         }
 
         public async Task<Response<ContactResponseDTO>> Update(long id, ContactUpdateDTO dto)
         {
-            var contact = _mapper.Map<ContactUpdateDTO, Contact>(dto);
-
-            contact.Id = id;
-
-            var result = _validator.ValidateBeforeUpdate(contact);
-
-            if (!result.IsValid)
-                return new Response<ContactResponseDTO>(result);
-
             try
             {
+                if (_repository.GetById(id) is null)
+                    throw new InfoException($"O {id} não foi encontrado", ErrorCodeEnum.NotFound);
+
+                var contact = _mapper.Map<ContactUpdateDTO, Contact>(dto);
+
+                contact.Id = id;
+
+                var result = _validator.ValidateBeforeUpdate(contact);
+
+                if (!result.IsValid)
+                    throw new ValidationException(result);
+
                 var entity = await _repository.Update(id, contact);
 
                 return new Response<ContactResponseDTO>(_mapper.Map<Contact, ContactResponseDTO>(entity));
             }
+            catch (DatabaseException)
+            {
+                throw;
+            }
+            catch (InfoException)
+            {
+                throw;
+            }
+            catch (ValidationException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
-                return new Response<ContactResponseDTO>(ResponseErrorEnum.DatabaseError, ex.Message);
+                throw new UnexpectedException(ex.Message, ex);
             }
         }
     }
