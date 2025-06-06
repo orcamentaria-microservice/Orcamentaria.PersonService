@@ -44,11 +44,7 @@ namespace Orcamentaria.PersonService.Application.Services
                 return new Response<IEnumerable<PersonResponseDTO>>(
                     data.Select(x => _mapper.Map<Person, PersonResponseDTO>(x)));
             }
-            catch (DatabaseException)
-            {
-                throw;
-            }
-            catch (InfoException)
+            catch (DefaultException)
             {
                 throw;
             }
@@ -69,7 +65,7 @@ namespace Orcamentaria.PersonService.Application.Services
 
                 return new Response<PersonResponseDTO>(_mapper.Map<Person, PersonResponseDTO>(data));
             }
-            catch (DatabaseException)
+            catch (DefaultException)
             {
                 throw;
             }
@@ -91,11 +87,7 @@ namespace Orcamentaria.PersonService.Application.Services
                 return new Response<IEnumerable<PersonResponseDTO>>(
                     data.Select(x => _mapper.Map<Person, PersonResponseDTO>(x)));
             }
-            catch (DatabaseException)
-            {
-                throw;
-            }
-            catch (InfoException)
+            catch (DefaultException)
             {
                 throw;
             }
@@ -122,11 +114,7 @@ namespace Orcamentaria.PersonService.Application.Services
 
                 return new Response<PersonResponseDTO>(_mapper.Map<Person, PersonResponseDTO>(entity));
             }
-            catch (DatabaseException)
-            {
-                throw;
-            }
-            catch (ValidationException)
+            catch (DefaultException)
             {
                 throw;
             }
@@ -156,15 +144,7 @@ namespace Orcamentaria.PersonService.Application.Services
 
                 return new Response<PersonResponseDTO>(_mapper.Map<Person, PersonResponseDTO>(entity));
             }
-            catch (DatabaseException)
-            {
-                throw;
-            }
-            catch (InfoException)
-            {
-                throw;
-            }
-            catch (ValidationException)
+            catch (DefaultException)
             {
                 throw;
             }

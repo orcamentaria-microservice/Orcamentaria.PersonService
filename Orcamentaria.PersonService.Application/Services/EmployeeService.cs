@@ -43,11 +43,7 @@ namespace Orcamentaria.PersonService.Application.Services
 
                 return new Response<EmployeeResponseDTO>(_mapper.Map<Employee, EmployeeResponseDTO>(data));
             }
-            catch (DatabaseException)
-            {
-                throw;
-            }
-            catch (InfoException)
+            catch (DefaultException)
             {
                 throw;
             }
@@ -69,11 +65,7 @@ namespace Orcamentaria.PersonService.Application.Services
                 return new Response<IEnumerable<EmployeeResponseDTO>>(
                     data.Select(x => _mapper.Map<Employee, EmployeeResponseDTO>(x)));
             }
-            catch (DatabaseException)
-            {
-                throw;
-            }
-            catch (InfoException)
+            catch (DefaultException)
             {
                 throw;
             }
@@ -95,11 +87,7 @@ namespace Orcamentaria.PersonService.Application.Services
                 return new Response<IEnumerable<EmployeeResponseDTO>>(
                     data.Select(x => _mapper.Map<Employee, EmployeeResponseDTO>(x)));
             }
-            catch (DatabaseException)
-            {
-                throw;
-            }
-            catch (InfoException)
+            catch (DefaultException)
             {
                 throw;
             }
@@ -127,11 +115,7 @@ namespace Orcamentaria.PersonService.Application.Services
 
                 return new Response<EmployeeResponseDTO>(_mapper.Map<Employee, EmployeeResponseDTO>(entity));
             }
-            catch (DatabaseException)
-            {
-                throw;
-            }
-            catch (ValidationException)
+            catch (DefaultException)
             {
                 throw;
             }
@@ -161,15 +145,7 @@ namespace Orcamentaria.PersonService.Application.Services
 
                 return new Response<EmployeeResponseDTO>(_mapper.Map<Employee, EmployeeResponseDTO>(entity));
             }
-            catch (DatabaseException)
-            {
-                throw;
-            }
-            catch (InfoException)
-            {
-                throw;
-            }
-            catch (ValidationException)
+            catch (DefaultException)
             {
                 throw;
             }
