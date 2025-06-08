@@ -4,14 +4,11 @@ using Orcamentaria.PersonService.Domain.Mappers;
 using Orcamentaria.PersonService.Domain.Models;
 using Orcamentaria.PersonService.Domain.Repositories;
 using Orcamentaria.PersonService.Domain.Services;
-using Orcamentaria.Lib.Infrastructure.Contexts;
 using Orcamentaria.PersonService.Infrastructure.Repositories;
 using Orcamentaria.PersonService.Application.Services;
-using Orcamentaria.Lib.Domain.Contexts;
 using Orcamentaria.PersonService.Infrastructure.Contexts;
 using Orcamentaria.Lib.Domain.Validators;
 using Orcamentaria.Lib.Infrastructure;
-using Orcamentaria.Lib.Domain.Models.Configurations;
 
 namespace Orcamentaria.PersonService.API
 {
@@ -30,8 +27,6 @@ namespace Orcamentaria.PersonService.API
         {
             CommonDI.ResolveCommonServices(_serviceName, _apiVersion, services, Configuration);
 
-            services.Configure<ServiceConfiguration>(Configuration.GetSection("ServiceConfiguration"));
-
             CommonDI.AddServiceRegistryHosted(services, Configuration);
 
             services.AddDbContext<MySqlContext>(options =>
@@ -47,8 +42,6 @@ namespace Orcamentaria.PersonService.API
                 typeof(ContactMapper), 
                 typeof(AddressMapper), 
                 typeof(EmployeeMapper));
-
-            services.AddScoped<IUserAuthContext, UserAuthContext>();
 
             services.AddScoped<IValidatorEntity<Person>, PersonValidator>();
             services.AddScoped<IValidatorEntity<Contact>, ContactValidator>();
