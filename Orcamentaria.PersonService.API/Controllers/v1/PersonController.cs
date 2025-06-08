@@ -60,7 +60,7 @@ namespace Orcamentaria.PersonService.API.Controllers.v1
             }
         }
 
-        [Authorize(Roles = "PERSON:INSERT")]
+        [Authorize(Roles = "PERSON:CREATE")]
         [HttpPost(Name = "PersonInsert")]
         public async Task<Response<PersonResponseDTO>> Insert([FromBody] PersonInsertDTO dto)
         {
@@ -74,7 +74,7 @@ namespace Orcamentaria.PersonService.API.Controllers.v1
             }
         }
 
-        [Authorize(Roles = "PERSON:CREATE")]
+        [Authorize(Roles = "PERSON:UPDATE")]
         [HttpPut("{id}", Name = "PersonUpdate")]
         public async Task<Response<PersonResponseDTO>> Update(long id, [FromBody] PersonUpdateDTO dto)
         {
