@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
-using Orcamentaria.Lib.Domain.Enums;
 using Orcamentaria.Lib.Domain.Validators;
 using Orcamentaria.PersonService.Domain.Enums;
 using Orcamentaria.PersonService.Domain.Models;
@@ -28,7 +27,7 @@ namespace Orcamentaria.PersonService.Application.Validators
                 .When(x => !string.IsNullOrEmpty(x.Rg))
                 .WithMessage("O {PropertyName} deve conter apenas números.");
             RuleFor(x => x.Cpf)
-                .Length(9).WithMessage("O {PropertyName} deve ter {MaxLength} caracteres.")
+                .Length(11).WithMessage("O {PropertyName} deve ter {MaxLength} caracteres.")
                 .Matches("^[0-9]+$")
                 .When(x => !string.IsNullOrEmpty(x.Cpf))
                 .WithMessage("O {PropertyName} deve conter apenas números.");
