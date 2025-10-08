@@ -19,23 +19,28 @@ namespace Orcamentaria.PersonService.Application.Services
         private readonly IPersonRepository _repository;
         private readonly IValidatorEntity<Person> _validator;
         private readonly IMapper _mapper;
+        private readonly IRequestContext _requestContext;
 
         public PersonService(
             IUserAuthContext userAuthContext,
             IPersonRepository repository, 
             IValidatorEntity<Person> validator,
-            IMapper mapper)
+            IMapper mapper,
+            IRequestContext requestContext)
         {
             _userAuthContext = userAuthContext;
             _repository = repository;
             _validator = validator;
             _mapper = mapper;
+            _requestContext = requestContext;
         }
 
         public Response<IEnumerable<PersonResponseDTO>> GetByCompanyId()
         {
             try
             {
+                object obj = null;
+                Console.WriteLine(obj.ToString()); // NullReferenceException
                 var data = _repository.GetByCompanyId();
 
                 if (!data.Any())
