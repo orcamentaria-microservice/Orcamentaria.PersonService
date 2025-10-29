@@ -39,8 +39,6 @@ namespace Orcamentaria.PersonService.Application.Services
         {
             try
             {
-                object obj = null;
-                Console.WriteLine(obj.ToString()); // NullReferenceException
                 var data = _repository.GetByCompanyId();
 
                 if (!data.Any())

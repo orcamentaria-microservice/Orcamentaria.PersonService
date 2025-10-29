@@ -14,7 +14,7 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
       - ./mysql-init-scripts:/docker-entrypoint-initdb.d
-
+      
   personservice-a:
     build:
       context: .
@@ -27,6 +27,11 @@ services:
     environment:
       - ConnectionStrings__DefaultConnection=Server=mysql;Port=3306;Database=person-db;User=user-docker;Password=weak-password;
       - ASPNETCORE_URLS=http://+:5000
+      - MessageBrokerConfiguration__Host=host.docker.internal  # Windows/macOS: aponta pro host
+      - MessageBrokerConfiguration__Port=5672
+      - MessageBrokerConfiguration__UserName=guest
+      - MessageBrokerConfiguration__Password=guest
 
 volumes:
   mysql-data:
+  rabbitmq-data:

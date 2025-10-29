@@ -6,7 +6,6 @@ using Orcamentaria.PersonService.Domain.Services;
 
 namespace Orcamentaria.PersonService.API.Controllers.v1
 {
-    [ApiVersion("1.0")]
     [Route("api/v1/[controller]")]
     [ApiController]
     public class PersonController : Controller
@@ -18,7 +17,7 @@ namespace Orcamentaria.PersonService.API.Controllers.v1
             _service = service;
         }
 
-        [Authorize(Roles = "PERSON:READ")]
+        [Authorize(Roles = "MASTER,PERSON:READ")]
         [HttpGet("GetById/{id}", Name = "PersonGetById")]
         public Response<PersonResponseDTO> GetById(int id)
         {
@@ -32,7 +31,7 @@ namespace Orcamentaria.PersonService.API.Controllers.v1
             }
         }
 
-        [Authorize(Roles = "PERSON:READ")]
+        [Authorize(Roles = "MASTER,PERSON:READ")]
         [HttpGet("GetByCompanyId", Name = "PersonGetByCompanyId")]
         public Response<IEnumerable<PersonResponseDTO>> GetByCompanyId()
         {
@@ -46,7 +45,7 @@ namespace Orcamentaria.PersonService.API.Controllers.v1
             }
         }
 
-        [Authorize(Roles = "PERSON:READ")]
+        [Authorize(Roles = "MASTER,PERSON:READ")]
         [HttpGet("GetByName/{name}", Name = "PersonGetByName")]
         public Response<IEnumerable<PersonResponseDTO>> GetByName(string name)
         {
@@ -60,7 +59,7 @@ namespace Orcamentaria.PersonService.API.Controllers.v1
             }
         }
 
-        [Authorize(Roles = "PERSON:CREATE")]
+        [Authorize(Roles = "MASTER,PERSON:CREATE")]
         [HttpPost(Name = "PersonInsert")]
         public async Task<Response<PersonResponseDTO>> Insert([FromBody] PersonInsertDTO dto)
         {
@@ -74,7 +73,7 @@ namespace Orcamentaria.PersonService.API.Controllers.v1
             }
         }
 
-        [Authorize(Roles = "PERSON:UPDATE")]
+        [Authorize(Roles = "MASTER,PERSON:UPDATE")]
         [HttpPut("{id}", Name = "PersonUpdate")]
         public async Task<Response<PersonResponseDTO>> Update(long id, [FromBody] PersonUpdateDTO dto)
         {

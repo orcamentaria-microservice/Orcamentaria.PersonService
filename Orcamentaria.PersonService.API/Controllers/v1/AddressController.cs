@@ -7,7 +7,6 @@ using Orcamentaria.PersonService.Domain.Services;
 
 namespace Orcamentaria.PersonService.API.Controllers.v1
 {
-    [ApiVersion("1.0")]
     [Route("api/v1/[controller]")]
     [ApiController]
     public class AddressController : Controller
@@ -19,7 +18,7 @@ namespace Orcamentaria.PersonService.API.Controllers.v1
             _service = service;
         }
 
-        [Authorize(Roles = "PERSON:READ")]
+        [Authorize(Roles = "MASTER,PERSON:READ")]
         [HttpGet("GetById/{id}", Name = "AddressGetByName")]
         public Response<AddressResponseDTO> GetById(int id)
         {
@@ -33,7 +32,7 @@ namespace Orcamentaria.PersonService.API.Controllers.v1
             }
         }
 
-        [Authorize(Roles = "PERSON:READ")]
+        [Authorize(Roles = "MASTER,PERSON:READ")]
         [HttpGet("GetByPersonId/{personId}", Name = "AddressGetByPersonId")]
         public Response<IEnumerable<AddressResponseDTO>> GetByPersonId(long personId)
         {
@@ -47,7 +46,7 @@ namespace Orcamentaria.PersonService.API.Controllers.v1
             }
         }
 
-        [Authorize(Roles = "PERSON:INSERT")]
+        [Authorize(Roles = "MASTER,PERSON:INSERT")]
         [HttpPost(Name = "AddressInsert")]
         public async Task<Response<AddressResponseDTO>> Insert([FromBody] AddressInsertDTO dto)
         {
@@ -61,7 +60,7 @@ namespace Orcamentaria.PersonService.API.Controllers.v1
             }
         }
 
-        [Authorize(Roles = "PERSON:UPDATE")]
+        [Authorize(Roles = "MASTER,PERSON:UPDATE")]
         [HttpPut("{id}", Name = "AddressUpdate")]
         public async Task<Response<AddressResponseDTO>> Update(long id, [FromBody] AddressUpdateDTO dto)
         {
@@ -75,7 +74,7 @@ namespace Orcamentaria.PersonService.API.Controllers.v1
             }
         }
 
-        [Authorize(Roles = "PERSON:DELETE")]
+        [Authorize(Roles = "MASTER,PERSON:DELETE")]
         [HttpDelete("{id}", Name = "AddressDelete")]
         public Response<AddressResponseDTO> Delete(long id)
         {
