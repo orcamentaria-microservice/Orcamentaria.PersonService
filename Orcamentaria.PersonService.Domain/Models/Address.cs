@@ -1,6 +1,8 @@
-﻿namespace Orcamentaria.PersonService.Domain.Models
+﻿using Orcamentaria.Lib.Domain.Entities;
+
+namespace Orcamentaria.PersonService.Domain.Models
 {
-    public class Address
+    public class Address : TenantEntity
     {
         public long Id { get; set; }
         public string Street { get; set; }

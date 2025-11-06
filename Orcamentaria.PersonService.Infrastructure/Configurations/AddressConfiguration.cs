@@ -10,17 +10,84 @@ namespace Orcamentaria.PersonService.Infrastructure.Configurations
         {
             builder.ToTable("T_ADDRESS");
             builder.HasKey(x => x.Id);
-            builder.Property(p => p.Id).HasColumnName("ID");
-            builder.Property(p => p.Street).HasColumnName("STREET");
-            builder.Property(p => p.ZipCode).HasColumnName("ZIPCODE");
-            builder.Property(p => p.Number).HasColumnName("NUMBER");
-            builder.Property(p => p.Complement).HasColumnName("COMPLEMENT");
-            builder.Property(p => p.Neihborhood).HasColumnName("NEIHBORHOOD");
-            builder.Property(p => p.City).HasColumnName("CITY");
-            builder.Property(p => p.State).HasColumnName("STATE");
-            builder.Property(p => p.Uf).HasColumnName("UF");
-            builder.Property(p => p.Default).HasColumnName("DEFAULT");
-            builder.Property(p => p.PersonId).HasColumnName("PERSON_ID");
+            builder.Property(p => p.Id)
+                .HasColumnName("ID")
+                .HasColumnType("BIGINT")
+                .ValueGeneratedOnAdd()
+                .IsRequired();
+
+            builder.Property(p => p.Street)
+                .HasColumnName("STREET")
+                .HasColumnType("VARCHAR(70)")
+                .IsRequired();
+
+            builder.Property(p => p.ZipCode)
+                .HasColumnName("ZIPCODE")
+                .HasColumnType("VARCHAR(8)")
+                .IsRequired();
+
+            builder.Property(p => p.Number)
+                .HasColumnName("NUMBER")
+                .HasColumnType("VARCHAR(6)");
+
+            builder.Property(p => p.Complement)
+                .HasColumnName("COMPLEMENT")
+                .HasColumnType("VARCHAR(45)");
+
+            builder.Property(p => p.Neihborhood)
+                .HasColumnName("NEIHBORHOOD")
+                .HasColumnType("VARCHAR(100)")
+                .IsRequired();
+
+            builder.Property(p => p.City)
+                .HasColumnName("CITY")
+                .HasColumnType("VARCHAR(100)")
+                .IsRequired();
+
+            builder.Property(p => p.State)
+                .HasColumnName("STATE")
+                .HasColumnType("VARCHAR(45)")
+                .IsRequired();
+
+            builder.Property(p => p.Uf)
+                .HasColumnName("UF")
+                .HasColumnType("VARCHAR(2)")
+                .IsRequired();
+
+            builder.Property(p => p.Default)
+                .HasColumnName("DEFAULT")
+                .HasColumnType("BIT");
+
+            builder.Property(p => p.PersonId)
+                .HasColumnName("PERSON_ID")
+                .HasColumnType("BIGINT")
+                .IsRequired();
+
+            builder.Property(p => p.CompanyId)
+                .HasColumnName("COMPANY_ID")
+                .HasColumnType("BIGINT")
+                .IsRequired();
+
+            builder.Property(p => p.CreatedAt)
+                .HasColumnName("CREATED_AT")
+                .HasColumnType("DATETIME")
+                .IsRequired();
+
+            builder.Property(p => p.CreatedBy)
+                .HasColumnName("CREATED_BY")
+                .HasColumnType("BIGINT")
+                .IsRequired();
+
+            builder.Property(p => p.UpdatedAt)
+                .HasColumnName("UPDATED_AT")
+                .HasColumnType("DATETIME")
+                .IsRequired();
+
+            builder.Property(p => p.UpdatedBy)
+                .HasColumnName("UPDATED_BY")
+                .HasColumnType("BIGINT")
+                .IsRequired();
+
         }
     }
 }

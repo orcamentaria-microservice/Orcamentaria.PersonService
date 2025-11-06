@@ -1,14 +1,10 @@
-﻿using Orcamentaria.PersonService.Domain.Models;
+﻿using Orcamentaria.Lib.Domain.Repositories;
+using Orcamentaria.PersonService.Domain.Models;
 
 namespace Orcamentaria.PersonService.Domain.Repositories
 {
-    public interface IAddressRepository
+    public interface IAddressRepository : IBasicRepository<Address>
     {
         int CountItems(long personId);
-        IEnumerable<Address> GetByPersonId(long personId);
-        Address? GetById(long id);
-        Task<Address> Insert(Address address);
-        Task<Address> Update(long id, Address address);
-        void Delete(Address address);
     }
 }

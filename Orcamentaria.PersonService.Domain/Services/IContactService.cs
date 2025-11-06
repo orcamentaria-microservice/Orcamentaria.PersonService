@@ -1,15 +1,16 @@
 ﻿using Orcamentaria.Lib.Domain.Models;
+using Orcamentaria.Lib.Domain.Models.Responses;
 using Orcamentaria.PersonService.Domain.DTOs.Contact;
+using Orcamentaria.PersonService.Domain.Models;
 
 namespace Orcamentaria.PersonService.Domain.Services
 {
     public interface IContactService
     {
-        Response<IEnumerable<ContactResponseDTO>> GetByPersonId(long personId);
-        Response<ContactResponseDTO> GetById(long id);
-        Task<Response<ContactResponseDTO>> Insert(ContactInsertDTO dto);
-        Task<Response<ContactResponseDTO>> Update(long id, ContactUpdateDTO dto);
-        Response<ContactResponseDTO> Delete(long id);
-
+        Task<Contact?> GetByIdAsync(long id);
+        Task<Response<IEnumerable<ContactResponseDTO>>?> GetAsync(GridParams gridParams);
+        Task<Response<ContactResponseDTO>> InsertAsync(ContactInsertDTO dto);
+        Task<Response<ContactResponseDTO>> UpdateAsync(long id, ContactUpdateDTO dto);
+        Task<Response<ContactResponseDTO>> DeleteAsync(long id);
     }
 }

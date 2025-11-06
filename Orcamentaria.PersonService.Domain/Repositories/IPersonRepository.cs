@@ -1,13 +1,9 @@
-﻿using Orcamentaria.PersonService.Domain.Models;
+﻿using Orcamentaria.Lib.Domain.Repositories;
+using Orcamentaria.PersonService.Domain.Models;
 
 namespace Orcamentaria.PersonService.Domain.Repositories
 {
-    public interface IPersonRepository
+    public interface IPersonRepository : IBasicRepository<Person>
     {
-        Person? GetById(long id);
-        IEnumerable<Person> GetByCompanyId();
-        IEnumerable<Person> GetByName(string name);
-        Task<Person> Insert(Person person);
-        Task<Person> Update(long id, Person person);
     }
 }

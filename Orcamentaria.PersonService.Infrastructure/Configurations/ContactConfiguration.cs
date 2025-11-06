@@ -10,11 +10,55 @@ namespace Orcamentaria.PersonService.Infrastructure.Configurations
         {
             builder.ToTable("T_CONTACT");
             builder.HasKey(x => x.Id);
-            builder.Property(p => p.Id).HasColumnName("ID");
-            builder.Property(p => p.ContactDescription).HasColumnName("CONTACT");
-            builder.Property(p => p.Type).HasColumnName("TYPE");
-            builder.Property(p => p.Default).HasColumnName("DEFAULT");
-            builder.Property(p => p.PersonId).HasColumnName("PERSON_ID");
+            builder.Property(p => p.Id)
+                .HasColumnName("ID")
+                .HasColumnType("BIGINT")
+                .ValueGeneratedOnAdd()
+                .IsRequired();
+
+            builder.Property(p => p.ContactDescription)
+                .HasColumnName("CONTACT")
+                .HasColumnType("VARCHAR(150)")
+                .IsRequired();
+
+            builder.Property(p => p.Type)
+                .HasColumnName("TYPE")
+                .HasColumnType("INT")
+                .IsRequired();
+
+            builder.Property(p => p.Default)
+                .HasColumnName("DEFAULT")
+                .HasColumnType("BIT");
+
+            builder.Property(p => p.PersonId)
+                .HasColumnName("PERSON_ID")
+                .HasColumnType("BIGINT")
+                .IsRequired();
+
+            builder.Property(p => p.CompanyId)
+                .HasColumnName("COMPANY_ID")
+                .HasColumnType("BIGINT")
+                .IsRequired();
+
+            builder.Property(p => p.CreatedAt)
+                .HasColumnName("CREATED_AT")
+                .HasColumnType("DATETIME")
+                .IsRequired();
+
+            builder.Property(p => p.CreatedBy)
+                .HasColumnName("CREATED_BY")
+                .HasColumnType("BIGINT")
+                .IsRequired();
+
+            builder.Property(p => p.UpdatedAt)
+                .HasColumnName("UPDATED_AT")
+                .HasColumnType("DATETIME")
+                .IsRequired();
+
+            builder.Property(p => p.UpdatedBy)
+                .HasColumnName("UPDATED_BY")
+                .HasColumnType("BIGINT")
+                .IsRequired();
         }
     }
 }

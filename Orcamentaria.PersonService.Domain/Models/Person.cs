@@ -1,8 +1,9 @@
-﻿using Orcamentaria.PersonService.Domain.Enums;
+﻿using Orcamentaria.Lib.Domain.Entities;
+using Orcamentaria.PersonService.Domain.Enums;
 
 namespace Orcamentaria.PersonService.Domain.Models
 {
-    public class Person
+    public class Person : TenantEntity
     {
         public long Id { get; set; }
         public string Name { get; set; }
@@ -10,7 +11,6 @@ namespace Orcamentaria.PersonService.Domain.Models
         public string? Cpf { get; set; }
         public string? Cnpj { get; set; }
         public PersonTypeEnum Type { get; set; }
-        public long CompanyId { get; set; }
         public bool Active { get; set; }
         public IEnumerable<Address> Addresses { get; set; }
         public IEnumerable<Contact> Contacts { get; set; }

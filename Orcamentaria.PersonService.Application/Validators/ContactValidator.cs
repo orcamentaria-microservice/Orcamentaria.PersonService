@@ -20,7 +20,7 @@ namespace Orcamentaria.PersonService.Application.Validators
             _personRepository = personRepository;
         }
 
-        public ContactValidator() 
+        public void CommonValidation(Contact entity)
         {
             RuleFor(x => x.ContactDescription)
                 .NotEmpty().WithMessage("O {PropertyName} é obrigatório.")
@@ -29,6 +29,8 @@ namespace Orcamentaria.PersonService.Application.Validators
 
         public ValidationResult ValidateBeforeInsert(Contact entity)
         {
+            CommonValidation(entity);
+
             RuleFor(x => x.Id)
                 .Empty().WithMessage("O {PropertyName} não deve ser informado.");
 
@@ -42,7 +44,7 @@ namespace Orcamentaria.PersonService.Application.Validators
             RuleFor(x => x.PersonId)
                 .Must((x, cancelation) =>
                 {
-                    var person = _personRepository.GetById(x.PersonId);
+                    var person = _personRepository.GetByIdAsync(x.PersonId).GetAwaiter().GetResult();
 
                     return person is not null;
 
@@ -57,18 +59,20 @@ namespace Orcamentaria.PersonService.Application.Validators
 
                 }).WithMessage("Limite de cadastrados atingido (6).");
 
-            return this.Validate(entity);
+            return Validate(entity);
         }
 
         public ValidationResult ValidateBeforeUpdate(Contact entity)
         {
+            CommonValidation(entity);
+
             RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("O {PropertyName} deve ser informado.");
+                .NotEmpty().WithMessage("O {PropertyName} deve ser informado.");
 
             RuleFor(x => x.Id)
                 .Must((x, cancelation) =>
                 {
-                    var entity = _repository.GetById(x.Id);
+                    var entity = _repository.GetByIdAsync(x.Id).GetAwaiter().GetResult();
 
                     return entity is not null;
 

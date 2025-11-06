@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+﻿using Microsoft.Extensions.DependencyInjection.Extensions;
 using Orcamentaria.Lib.Domain.Validators;
 using Orcamentaria.Lib.Infrastructure;
 using Orcamentaria.PersonService.Application.Services;
@@ -32,11 +31,8 @@ namespace Orcamentaria.PersonService.API
 
             CommonDI.AddServiceRegistryHosted(services, Configuration);
 
-            CommonDI.ResolveCommonServices(_serviceName, _apiVersion, services, Configuration, () =>
+            CommonDI.ResolveCommonServicesWithMySql<MySqlContext>(_serviceName, _apiVersion, services, Configuration, () =>
             {
-                services.AddDbContext<MySqlContext>(options =>
-                    options.UseMySQL(Configuration.GetConnectionString("DefaultConnection")));
-
                 services.AddAutoMapper(
                     typeof(PersonMapper), 
                     typeof(ContactMapper), 

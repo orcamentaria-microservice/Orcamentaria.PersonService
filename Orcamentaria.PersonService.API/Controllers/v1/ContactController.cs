@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Orcamentaria.Lib.Domain.Models;
+using Orcamentaria.Lib.Domain.Models.Responses;
 using Orcamentaria.PersonService.Domain.DTOs.Contact;
 using Orcamentaria.PersonService.Domain.Services;
 
@@ -17,13 +18,13 @@ namespace Orcamentaria.PersonService.API.Controllers.v1
             _service = service;
         }
 
-        [Authorize(Roles = "MASTER,PERSON:READ")]
-        [HttpGet("GetById/{id}", Name = "ContactGetByName")]
-        public Response<ContactResponseDTO> GetById(int id)
+        [Authorize(Roles = "MASTER,COMPANY_MASTER,PERSON:READ")]
+        [HttpPost("Get", Name = "ContactGet")]
+        public async Task<Response<IEnumerable<ContactResponseDTO>>?> GetAsync([FromBody] GridParams gridParams)
         {
             try
             {
-                return _service.GetById(id);
+                return await _service.GetAsync(gridParams);
             }
             catch (Exception)
             {
@@ -31,13 +32,13 @@ namespace Orcamentaria.PersonService.API.Controllers.v1
             }
         }
 
-        [Authorize(Roles = "MASTER,PERSON:READ")]
-        [HttpGet("GetByPersonId/{personId}", Name = "ContactGetByPersonId")]
-        public Response<IEnumerable<ContactResponseDTO>> GetByPersonId(long personId)
+        [Authorize(Roles = "MASTER,COMPANY_MASTER,PERSON:INSERT")]
+        [HttpPost("Insert", Name = "ContactInsert")]
+        public async Task<Response<ContactResponseDTO>> InsertAsync([FromBody] ContactInsertDTO dto)
         {
             try
             {
-                return _service.GetByPersonId(personId);
+                return await _service.InsertAsync(dto);
             }
             catch (Exception)
             {
@@ -45,13 +46,13 @@ namespace Orcamentaria.PersonService.API.Controllers.v1
             }
         }
 
-        [Authorize(Roles = "MASTER,PERSON:CREATE")]
-        [HttpPost(Name = "ContactInsert")]
-        public async Task<Response<ContactResponseDTO>> Insert([FromBody] ContactInsertDTO dto)
+        [Authorize(Roles = "MASTER,COMPANY_MASTER,PERSON:UPDATE")]
+        [HttpPut("Update/{id}", Name = "ContactUpdate")]
+        public async Task<Response<ContactResponseDTO>> UpdateAsync(long id, [FromBody] ContactUpdateDTO dto)
         {
             try
             {
-                return await _service.Insert(dto);
+                return await _service.UpdateAsync(id, dto);
             }
             catch (Exception)
             {
@@ -59,27 +60,13 @@ namespace Orcamentaria.PersonService.API.Controllers.v1
             }
         }
 
-        [Authorize(Roles = "MASTER,PERSON:UPATE")]
-        [HttpPut("{id}", Name = "ContactUpdate")]
-        public async Task<Response<ContactResponseDTO>> Update(long id, [FromBody] ContactUpdateDTO dto)
+        [Authorize(Roles = "MASTER,COMPANY_MASTER,PERSON:DELETE")]
+        [HttpDelete("Delete/{id}", Name = "ContactDelete")]
+        public async Task<Response<ContactResponseDTO>> DeleteAsync(long id)
         {
             try
             {
-                return await _service.Update(id, dto);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        [Authorize(Roles = "MASTER,PERSON:DELETE")]
-        [HttpDelete("{id}", Name = "ContactDelete")]
-        public Response<ContactResponseDTO> Delete(long id)
-        {
-            try
-            {
-                return _service.Delete(id);
+                return await _service.DeleteAsync(id);
             }
             catch (Exception)
             {

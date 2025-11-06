@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Orcamentaria.Lib.Domain.Models;
+using Orcamentaria.Lib.Domain.Models.Responses;
 using Orcamentaria.PersonService.Domain.DTOs.Person;
 using Orcamentaria.PersonService.Domain.Services;
 
@@ -17,13 +18,13 @@ namespace Orcamentaria.PersonService.API.Controllers.v1
             _service = service;
         }
 
-        [Authorize(Roles = "MASTER,PERSON:READ")]
-        [HttpGet("GetById/{id}", Name = "PersonGetById")]
-        public Response<PersonResponseDTO> GetById(int id)
+        [Authorize(Roles = "MASTER,COMPANY_MASTER,PERSON:READ")]
+        [HttpPost("Get", Name = "PersonGet")]
+        public async Task<Response<IEnumerable<PersonResponseDTO>>?> GetAsync([FromBody] GridParams gridParams)
         {
             try
             {
-                return _service.GetById(id);
+                return await _service.GetAsync(gridParams);
             }
             catch (Exception)
             {
@@ -31,13 +32,13 @@ namespace Orcamentaria.PersonService.API.Controllers.v1
             }
         }
 
-        [Authorize(Roles = "MASTER,PERSON:READ")]
-        [HttpGet("GetByCompanyId", Name = "PersonGetByCompanyId")]
-        public Response<IEnumerable<PersonResponseDTO>> GetByCompanyId()
+        [Authorize(Roles = "MASTER,COMPANY_MASTER,PERSON:CREATE")]
+        [HttpPost("Insert", Name = "PersonInsert")]
+        public async Task<Response<PersonResponseDTO>> InsertAsync([FromBody] PersonInsertDTO dto)
         {
             try
             {
-                return _service.GetByCompanyId();
+                return await _service.InsertAsync(dto);
             }
             catch (Exception)
             {
@@ -45,41 +46,13 @@ namespace Orcamentaria.PersonService.API.Controllers.v1
             }
         }
 
-        [Authorize(Roles = "MASTER,PERSON:READ")]
-        [HttpGet("GetByName/{name}", Name = "PersonGetByName")]
-        public Response<IEnumerable<PersonResponseDTO>> GetByName(string name)
+        [Authorize(Roles = "MASTER,COMPANY_MASTER,PERSON:UPDATE")]
+        [HttpPut("Update/{id}", Name = "PersonUpdate")]
+        public async Task<Response<PersonResponseDTO>> UpdateAsync(long id, [FromBody] PersonUpdateDTO dto)
         {
             try
             {
-                return _service.GetByName(name);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        [Authorize(Roles = "MASTER,PERSON:CREATE")]
-        [HttpPost(Name = "PersonInsert")]
-        public async Task<Response<PersonResponseDTO>> Insert([FromBody] PersonInsertDTO dto)
-        {
-            try
-            {
-                return await _service.Insert(dto);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        [Authorize(Roles = "MASTER,PERSON:UPDATE")]
-        [HttpPut("{id}", Name = "PersonUpdate")]
-        public async Task<Response<PersonResponseDTO>> Update(long id, [FromBody] PersonUpdateDTO dto)
-        {
-            try
-            {
-                return await _service.Update(id, dto);
+                return await _service.UpdateAsync(id, dto);
             }
             catch (Exception)
             {

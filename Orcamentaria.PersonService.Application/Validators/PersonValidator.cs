@@ -16,7 +16,7 @@ namespace Orcamentaria.PersonService.Application.Validators
             _repository = repository;
         }
 
-        public PersonValidator() 
+        public void CommonValidation(Person entity)
         {
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("O {PropertyName} é obrigatório.")
@@ -46,31 +46,31 @@ namespace Orcamentaria.PersonService.Application.Validators
 
         public ValidationResult ValidateBeforeInsert(Person entity)
         {
-            var validator = new PersonValidator();
+            CommonValidation(entity);
 
-            validator.RuleFor(x => x.Id)
+            RuleFor(x => x.Id)
                 .Empty().WithMessage("O {PropertyName} não deve ser informado.");
 
-            return validator.Validate(entity);
+            return Validate(entity);
         }
 
         public ValidationResult ValidateBeforeUpdate(Person entity)
         {
-            var validator = new PersonValidator();
+            CommonValidation(entity);
 
-            validator.RuleFor(x => x.Id)
+            RuleFor(x => x.Id)
                 .NotEmpty().WithMessage("O {PropertyName} deve ser informado.");
 
-            validator.RuleFor(x => x.Id)
+            RuleFor(x => x.Id)
                .Must((x, cancelation) =>
                {
-                   var entity = _repository.GetById(x.Id);
+                   var entity = _repository.GetByIdAsync(x.Id).GetAwaiter().GetResult();
 
                    return entity is not null;
 
                }).WithMessage("Id não encontrado.");
 
-            return validator.Validate(entity);
+            return Validate(entity);
         }
     }
 }

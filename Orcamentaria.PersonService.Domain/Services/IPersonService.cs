@@ -1,14 +1,15 @@
 ﻿using Orcamentaria.Lib.Domain.Models;
+using Orcamentaria.Lib.Domain.Models.Responses;
 using Orcamentaria.PersonService.Domain.DTOs.Person;
+using Orcamentaria.PersonService.Domain.Models;
 
 namespace Orcamentaria.PersonService.Domain.Services
 {
     public interface IPersonService
     {
-        Response<PersonResponseDTO> GetById(long id);
-        Response<IEnumerable<PersonResponseDTO>> GetByCompanyId();
-        Response<IEnumerable<PersonResponseDTO>> GetByName(string name);
-        Task<Response<PersonResponseDTO>> Insert(PersonInsertDTO dto);
-        Task<Response<PersonResponseDTO>> Update(long id, PersonUpdateDTO dto);
+        Task<Person?> GetByIdAsync(long id);
+        Task<Response<IEnumerable<PersonResponseDTO>>?> GetAsync(GridParams gridParams);
+        Task<Response<PersonResponseDTO>> InsertAsync(PersonInsertDTO dto);
+        Task<Response<PersonResponseDTO>> UpdateAsync(long id, PersonUpdateDTO dto);
     }
 }

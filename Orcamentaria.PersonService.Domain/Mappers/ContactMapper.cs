@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Orcamentaria.PersonService.Domain.DTOs.Contact;
-using Orcamentaria.PersonService.Domain.DTOs.Person;
 using Orcamentaria.PersonService.Domain.Models;
 
 namespace Orcamentaria.PersonService.Domain.Mappers

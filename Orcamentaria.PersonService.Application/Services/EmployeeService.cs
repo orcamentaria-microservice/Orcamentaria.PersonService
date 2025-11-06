@@ -4,6 +4,7 @@ using Orcamentaria.Lib.Domain.Enums;
 using Orcamentaria.Lib.Domain.Exceptions;
 using Orcamentaria.Lib.Domain.Models;
 using Orcamentaria.Lib.Domain.Models.Exceptions;
+using Orcamentaria.Lib.Domain.Models.Responses;
 using Orcamentaria.Lib.Domain.Validators;
 using Orcamentaria.PersonService.Domain.DTOs.Employee;
 using Orcamentaria.PersonService.Domain.Enums;
@@ -32,16 +33,13 @@ namespace Orcamentaria.PersonService.Application.Services
             _mapper = mapper;
         }
 
-        public Response<EmployeeResponseDTO> GetById(long id)
+        public async Task<Employee?> GetByIdAsync(long id)
         {
             try
             {
-                var data = _repository.GetById(id);
-
-                if (data is null)
-                    throw new InfoException($"O {id} não foi encontrado", ErrorCodeEnum.NotFound);
-
-                return new Response<EmployeeResponseDTO>(_mapper.Map<Employee, EmployeeResponseDTO>(data));
+                return await _repository.GetByIdAsync(id, 
+                    p => p.Contacts, 
+                    p => p.Addresses);
             }
             catch (DefaultException)
             {
@@ -53,17 +51,19 @@ namespace Orcamentaria.PersonService.Application.Services
             }
         }
 
-        public Response<IEnumerable<EmployeeResponseDTO>> GetByCompanyId()
+        public async Task<Response<IEnumerable<EmployeeResponseDTO>>?> GetAsync(GridParams gridParams)
         {
             try
             {
-                var data = _repository.GetByCompanyId();
+                var (data, pagination) = await _repository.GetAsync(gridParams,
+                    p => p.Contacts,
+                    p => p.Addresses);
 
                 if (!data.Any())
-                    throw new InfoException($"Nenhum dado foi encontrado", ErrorCodeEnum.NotFound);
+                    throw new InfoException($"Nenhum dado foi encontrado.", ErrorCodeEnum.NotFound);
 
                 return new Response<IEnumerable<EmployeeResponseDTO>>(
-                    data.Select(x => _mapper.Map<Employee, EmployeeResponseDTO>(x)));
+                    data.Select(x => _mapper.Map<Employee, EmployeeResponseDTO>(x)), pagination);
             }
             catch (DefaultException)
             {
@@ -75,35 +75,12 @@ namespace Orcamentaria.PersonService.Application.Services
             }
         }
 
-        public Response<IEnumerable<EmployeeResponseDTO>> GetByName(string name)
-        {
-            try
-            {
-                var data = _repository.GetByName(name);
-
-                if (!data.Any())
-                    throw new InfoException($"Nenhum dado foi encontrado", ErrorCodeEnum.NotFound);
-
-                return new Response<IEnumerable<EmployeeResponseDTO>>(
-                    data.Select(x => _mapper.Map<Employee, EmployeeResponseDTO>(x)));
-            }
-            catch (DefaultException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new UnexpectedException(ex.Message, ex);
-            }
-        }
-
-        public async Task<Response<EmployeeResponseDTO>> Insert(EmployeeInsertDTO dto)
+        public async Task<Response<EmployeeResponseDTO>> InsertAsync(EmployeeInsertDTO dto)
         {
             try
             {
                 var employee = _mapper.Map<EmployeeInsertDTO, Employee>(dto);
 
-                employee.CompanyId = _userAuthContext.UserCompanyId;
                 employee.Type = PersonTypeEnum.Employee;
 
                 var result = _validator.ValidateBeforeInsert(employee);
@@ -111,7 +88,7 @@ namespace Orcamentaria.PersonService.Application.Services
                 if (!result.IsValid)
                     throw new ValidationException(result);
 
-                var entity = await _repository.Insert(employee);
+                var entity = await _repository.InsertAsync(employee);
 
                 return new Response<EmployeeResponseDTO>(_mapper.Map<Employee, EmployeeResponseDTO>(entity));
             }
@@ -125,13 +102,10 @@ namespace Orcamentaria.PersonService.Application.Services
             }
         }
 
-        public async Task<Response<EmployeeResponseDTO>> Update(long id, EmployeeUpdateDTO dto)
+        public async Task<Response<EmployeeResponseDTO>> UpdateAsync(long id, EmployeeUpdateDTO dto)
         {
             try
             {
-                if (_repository.GetById(id) is null)
-                    throw new InfoException($"O {id} não foi encontrado", ErrorCodeEnum.NotFound);
-
                 var employee = _mapper.Map<EmployeeUpdateDTO, Employee>(dto);
 
                 employee.Id = id;
@@ -141,7 +115,7 @@ namespace Orcamentaria.PersonService.Application.Services
                 if (!result.IsValid)
                     throw new ValidationException(result);
 
-                var entity = await _repository.Update(id, employee);
+                var entity = await _repository.UpdateAsync(id, employee);
 
                 return new Response<EmployeeResponseDTO>(_mapper.Map<Employee, EmployeeResponseDTO>(entity));
             }

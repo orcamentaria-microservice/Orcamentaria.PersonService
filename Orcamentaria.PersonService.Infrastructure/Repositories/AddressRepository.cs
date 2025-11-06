@@ -1,17 +1,24 @@
-﻿using Orcamentaria.Lib.Domain.Exceptions;
+﻿using Orcamentaria.Lib.Domain.Contexts;
+using Orcamentaria.Lib.Domain.Exceptions;
+using Orcamentaria.Lib.Infrastructure.Repositories;
 using Orcamentaria.PersonService.Domain.Models;
 using Orcamentaria.PersonService.Domain.Repositories;
 using Orcamentaria.PersonService.Infrastructure.Contexts;
 
 namespace Orcamentaria.PersonService.Infrastructure.Repositories
 {
-    public class AddressRepository : IAddressRepository
+    public class AddressRepository : BasicRepository<Address>, IAddressRepository
     {
         private readonly MySqlContext _dbContext;
+        private readonly IUserAuthContext _userAuthContext;
 
-        public AddressRepository(MySqlContext dbContext)
+        public AddressRepository(
+            MySqlContext dbContext,
+            IUserAuthContext userAuthContext)
+            : base(dbContext, userAuthContext)
         {
             _dbContext = dbContext;
+            _userAuthContext = userAuthContext;
         }
 
         public int CountItems(long personId)
@@ -26,61 +33,39 @@ namespace Orcamentaria.PersonService.Infrastructure.Repositories
             }
         }
 
-        public void Delete(Address address) 
+        override
+        public async Task<Address> InsertAsync(Address entity)
         {
             try
             {
-                _dbContext.Addresses.Remove(address);
-            }
-            catch (Exception ex)
-            {
-                throw new DatabaseException(ex.Message, ex);
-            }
-        } 
+                entity.CreatedBy = _userAuthContext.UserId;
+                entity.UpdatedBy = _userAuthContext.UserId;
+                entity.CreatedAt = DateTime.Now;
+                entity.UpdatedAt = DateTime.Now;
 
-        public Address? GetById(long id)
-        {
-            try
-            {
-                return _dbContext.Addresses.FirstOrDefault(x => x.Id == id);
-            }
-            catch (Exception ex)
-            {
-                throw new DatabaseException(ex.Message, ex);
-            }
-        }
-
-        public IEnumerable<Address> GetByPersonId(long personId)
-        {
-            try
-            {
-                return _dbContext.Addresses.Where(x => x.PersonId == personId);
-            }
-            catch (Exception ex)
-            {
-                throw new DatabaseException(ex.Message, ex);
-            }
-        }
-
-        public async Task<Address> Insert(Address address)
-        {
-            try
-            {
-                if (!address.Default)
+                if (!entity.Default)
                 {
-                    _dbContext.Addresses.Add(address);
+                    _dbContext.Addresses.Add(entity);
                     await _dbContext.SaveChangesAsync();
-                    return address;
+                    return entity;
                 }
-                
-                var entity = _dbContext.Addresses.First(x => x.PersonId == address.PersonId && x.Default);
 
-                if (entity is null)
-                    return address;
+                var conflictDefault = _dbContext.Addresses.FirstOrDefault(x =>
+                    x.PersonId == entity.PersonId && x.Default);
 
-                entity.Default = false;
+                if (conflictDefault is null)
+                {
+                    _dbContext.Addresses.Add(entity);
+                    await _dbContext.SaveChangesAsync();
+                    return entity;
+                }
+
+                conflictDefault.Default = false;
+                conflictDefault.UpdatedBy = _userAuthContext.UserId;
+                conflictDefault.UpdatedAt = DateTime.Now;
+                _dbContext.Addresses.Add(entity);
                 await _dbContext.SaveChangesAsync();
-                return address;
+                return entity;
             }
             catch (Exception ex)
             {
@@ -88,31 +73,63 @@ namespace Orcamentaria.PersonService.Infrastructure.Repositories
             }
         }
 
-        public async Task<Address> Update(long id, Address address)
+        override
+        public async Task<Address> UpdateAsync(long id, Address entity)
         {
             try
             {
-                var entity = _dbContext.Addresses.First(p => p.Id == id);
-                var exists = _dbContext.Addresses.First(x =>
-                x.Id != address.Id &&
-                x.PersonId == entity.PersonId &&
+                entity.UpdatedBy = _userAuthContext.UserId;
+                entity.UpdatedAt = DateTime.Now;
+
+                var existing = _dbContext.Addresses.First(p => p.Id == id);
+
+                if (!entity.Default)
+                {
+                    existing.Street = entity.Street;
+                    existing.ZipCode = entity.ZipCode;
+                    existing.Number = entity.Number;
+                    existing.Complement = entity.Complement;
+                    existing.Neihborhood = entity.Neihborhood;
+                    existing.City = entity.City;
+                    existing.State = entity.State;
+                    existing.Uf = entity.Uf;
+                    existing.Default = entity.Default;
+                    await _dbContext.SaveChangesAsync();
+                    return entity;
+                }
+
+                var conflictDefault = _dbContext.Addresses.First(x =>
+                x.Id != entity.Id &&
+                x.PersonId == existing.PersonId &&
                 x.Default);
 
-                if (exists is not null && address.Default)
+                if (conflictDefault is null)
                 {
-                    exists.Default = false;
+                    existing.Street = entity.Street;
+                    existing.ZipCode = entity.ZipCode;
+                    existing.Number = entity.Number;
+                    existing.Complement = entity.Complement;
+                    existing.Neihborhood = entity.Neihborhood;
+                    existing.City = entity.City;
+                    existing.State = entity.State;
+                    existing.Uf = entity.Uf;
+                    existing.Default = entity.Default;
                     await _dbContext.SaveChangesAsync();
+                    return entity;
                 }
 
-                entity.Street = address.Street;
-                entity.ZipCode = address.ZipCode;
-                entity.Number = address.Number;
-                entity.Complement = address.Complement;
-                entity.Neihborhood = address.Neihborhood;
-                entity.City = address.City;
-                entity.State = address.State;
-                entity.Uf = address.Uf;
-                entity.Default = address.Default;
+                conflictDefault.Default = false;
+                conflictDefault.UpdatedBy = _userAuthContext.UserId;
+                conflictDefault.UpdatedAt = DateTime.Now;
+                existing.Street = entity.Street;
+                existing.ZipCode = entity.ZipCode;
+                existing.Number = entity.Number;
+                existing.Complement = entity.Complement;
+                existing.Neihborhood = entity.Neihborhood;
+                existing.City = entity.City;
+                existing.State = entity.State;
+                existing.Uf = entity.Uf;
+                existing.Default = entity.Default;
 
                 await _dbContext.SaveChangesAsync();
 

@@ -1,17 +1,24 @@
-﻿using Orcamentaria.Lib.Domain.Exceptions;
+﻿using Orcamentaria.Lib.Domain.Contexts;
+using Orcamentaria.Lib.Domain.Exceptions;
+using Orcamentaria.Lib.Infrastructure.Repositories;
 using Orcamentaria.PersonService.Domain.Models;
 using Orcamentaria.PersonService.Domain.Repositories;
 using Orcamentaria.PersonService.Infrastructure.Contexts;
 
 namespace Orcamentaria.PersonService.Infrastructure.Repositories
 {
-    public class ContactRepository : IContactRepository
+    public class ContactRepository : BasicRepository<Contact>, IContactRepository
     {
         private readonly MySqlContext _dbContext;
+        private readonly IUserAuthContext _userAuthContext;
 
-        public ContactRepository(MySqlContext dbContext) 
+        public ContactRepository(
+            MySqlContext dbContext,
+            IUserAuthContext userAuthContext)
+            : base(dbContext, userAuthContext)
         {
             _dbContext = dbContext;
+            _userAuthContext = userAuthContext;
         }
 
         public int CountItems(long personId)
@@ -26,89 +33,86 @@ namespace Orcamentaria.PersonService.Infrastructure.Repositories
             }
         }
 
-        public void Delete(Contact contact)
+        override
+        public async Task<Contact> InsertAsync(Contact entity)
         {
             try
             {
-                _dbContext.Contacts.Remove(contact);
-            }
-            catch (Exception ex)
-            {
-                throw new DatabaseException(ex.Message, ex);
-            }
-        }
+                entity.CreatedBy = _userAuthContext.UserId;
+                entity.UpdatedBy = _userAuthContext.UserId;
+                entity.CreatedAt = DateTime.Now;
+                entity.UpdatedAt = DateTime.Now;
 
-        public Contact? GetById(long id)
-        {
-            try
-            {
-                return _dbContext.Contacts.FirstOrDefault(x => x.Id == id);
-            }
-            catch (Exception ex)
-            {
-                throw new DatabaseException(ex.Message, ex);
-            }
-        }
-
-        public IEnumerable<Contact> GetByPersonId(long personId)
-        {
-            try
-            {
-                return _dbContext.Contacts.Where(x => x.PersonId == personId);
-            }
-            catch (Exception ex)
-            {
-                throw new DatabaseException(ex.Message, ex);
-            }
-        }
-
-        public async Task<Contact> Insert(Contact contact)
-        {
-            try
-            {
-                if (!contact.Default)
+                if (!entity.Default)
                 {
-                    _dbContext.Contacts.Add(contact);
+                    _dbContext.Contacts.Add(entity);
                     await _dbContext.SaveChangesAsync();
-                    return contact;
+                    return entity;
                 }
 
-                var entity = _dbContext.Contacts.FirstOrDefault(x =>  
-                    x.PersonId == contact.PersonId && x.Type == contact.Type && x.Default);
+                var conflictDefault = _dbContext.Contacts.FirstOrDefault(x =>
+                    x.PersonId == entity.PersonId && x.Type == entity.Type && x.Default);
 
-                if(entity is null)
-                    return contact;
-
-                entity.Default = false;
-                await _dbContext.SaveChangesAsync();
-                return contact;
-            }
-            catch (Exception ex)
-            {
-                throw new DatabaseException(ex.Message, ex);
-            }
-        }
-
-        public async Task<Contact> Update(long id, Contact contact)
-        {
-            try
-            {
-                var entity = _dbContext.Contacts.First(p => p.Id == id);
-                var exists = _dbContext.Contacts.First(x => 
-                x.Id != contact.Id && x.PersonId == entity.PersonId && x.Type == entity.Type && x.Default);
-            
-                if(exists is not null && contact.Default)
+                if (conflictDefault is null)
                 {
-                    exists.Default = false;
+                    _dbContext.Contacts.Add(entity);
                     await _dbContext.SaveChangesAsync();
+                    return entity;
                 }
-            
-                entity.ContactDescription = contact.ContactDescription;
-                entity.Default = contact.Default;
 
+                conflictDefault.Default = false;
+                conflictDefault.UpdatedBy = _userAuthContext.UserId;
+                conflictDefault.UpdatedAt = DateTime.Now;
+                _dbContext.Contacts.Add(entity);
                 await _dbContext.SaveChangesAsync();
-
                 return entity;
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException(ex.Message, ex);
+            }
+        }
+
+
+        override
+        public async Task<Contact> UpdateAsync(long id, Contact entity)
+        {
+            try
+            {
+                entity.UpdatedBy = _userAuthContext.UserId;
+                entity.UpdatedAt = DateTime.Now;
+
+                var existing = _dbContext.Contacts.First(p => p.Id == id);
+
+                if(!entity.Default)
+                {
+                    existing.ContactDescription = entity.ContactDescription;
+                    existing.Default = entity.Default;
+
+                    await _dbContext.SaveChangesAsync();
+                    return existing;
+                }
+
+                var conflictDefault = _dbContext.Contacts.First(x =>
+                x.Id != entity.Id && x.PersonId == existing.PersonId && x.Type == existing.Type && x.Default);
+
+                if (conflictDefault is null)
+                {
+                    existing.ContactDescription = entity.ContactDescription;
+                    existing.Default = entity.Default;
+                    await _dbContext.SaveChangesAsync();
+                    return existing;
+                }
+                
+                conflictDefault.Default = false;
+                conflictDefault.UpdatedBy = _userAuthContext.UserId;
+                conflictDefault.UpdatedAt = DateTime.Now;
+                existing.ContactDescription = entity.ContactDescription;
+                existing.Default = entity.Default;
+
+                await _dbContext.SaveChangesAsync();
+
+                return existing;
             }
             catch (Exception ex)
             {

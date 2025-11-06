@@ -1,8 +1,9 @@
-﻿using Orcamentaria.PersonService.Domain.Enums;
+﻿using Orcamentaria.Lib.Domain.Entities;
+using Orcamentaria.PersonService.Domain.Enums;
 
 namespace Orcamentaria.PersonService.Domain.Models
 {
-    public class Contact
+    public class Contact : TenantEntity
     {
         public long Id { get; set; }
         public string ContactDescription { get; set; }

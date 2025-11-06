@@ -3,8 +3,8 @@ using Orcamentaria.Lib.Domain.Enums;
 using Orcamentaria.Lib.Domain.Exceptions;
 using Orcamentaria.Lib.Domain.Models;
 using Orcamentaria.Lib.Domain.Models.Exceptions;
+using Orcamentaria.Lib.Domain.Models.Responses;
 using Orcamentaria.Lib.Domain.Validators;
-using Orcamentaria.PersonService.Domain.DTOs.Address;
 using Orcamentaria.PersonService.Domain.DTOs.Contact;
 using Orcamentaria.PersonService.Domain.Models;
 using Orcamentaria.PersonService.Domain.Repositories;
@@ -28,19 +28,11 @@ namespace Orcamentaria.PersonService.Application.Services
             _mapper = mapper;
         }
 
-        public Response<ContactResponseDTO> Delete(long id)
+        public async Task<Contact?> GetByIdAsync(long id)
         {
             try
             {
-                var entity = _repository.GetById(id);
-
-                if (entity is null)
-                    throw new InfoException($"O {id} não foi encontrado", ErrorCodeEnum.NotFound);
-
-                _repository.Delete(entity);
-
-                return new Response<ContactResponseDTO>();
-
+                return await _repository.GetByIdAsync(id);
             }
             catch (DefaultException)
             {
@@ -52,38 +44,17 @@ namespace Orcamentaria.PersonService.Application.Services
             }
         }
 
-        public Response<ContactResponseDTO> GetById(long id)
+        public async Task<Response<IEnumerable<ContactResponseDTO>>> GetAsync(GridParams gridParams)
         {
             try
             {
-                var data = _repository.GetById(id);
-
-                if (data is null)
-                    throw new InfoException($"O {id} não foi encontrado", ErrorCodeEnum.NotFound);
-
-                return new Response<ContactResponseDTO>(_mapper.Map<Contact, ContactResponseDTO>(data));
-            }
-            catch (DefaultException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new UnexpectedException(ex.Message, ex);
-            }
-        }
-
-        public Response<IEnumerable<ContactResponseDTO>> GetByPersonId(long personId)
-        {
-            try
-            {
-                var data = _repository.GetByPersonId(personId);
+                var (data, pagination) = await _repository.GetAsync(gridParams);
 
                 if (!data.Any())
-                    throw new InfoException($"O {personId} não foi encontrado", ErrorCodeEnum.NotFound);
+                    throw new InfoException($"Nenhum dado foi encontrado.", ErrorCodeEnum.NotFound);
 
                 return new Response<IEnumerable<ContactResponseDTO>>(
-                    data.Select(x => _mapper.Map<Contact, ContactResponseDTO>(x)));
+                    data.Select(x => _mapper.Map<Contact, ContactResponseDTO>(x)), pagination);
             }
             catch (DefaultException)
             {
@@ -95,7 +66,7 @@ namespace Orcamentaria.PersonService.Application.Services
             }
         }
 
-        public async Task<Response<ContactResponseDTO>> Insert(ContactInsertDTO dto)
+        public async Task<Response<ContactResponseDTO>> InsertAsync(ContactInsertDTO dto)
         {
             try
             {
@@ -106,7 +77,7 @@ namespace Orcamentaria.PersonService.Application.Services
                 if (!result.IsValid)
                     throw new ValidationException(result);
 
-                var entity = await _repository.Insert(contact);
+                var entity = await _repository.InsertAsync(contact);
 
                 return new Response<ContactResponseDTO>(_mapper.Map<Contact, ContactResponseDTO>(entity));
             }
@@ -120,13 +91,10 @@ namespace Orcamentaria.PersonService.Application.Services
             }
         }
 
-        public async Task<Response<ContactResponseDTO>> Update(long id, ContactUpdateDTO dto)
+        public async Task<Response<ContactResponseDTO>> UpdateAsync(long id, ContactUpdateDTO dto)
         {
             try
             {
-                if (_repository.GetById(id) is null)
-                    throw new InfoException($"O {id} não foi encontrado", ErrorCodeEnum.NotFound);
-
                 var contact = _mapper.Map<ContactUpdateDTO, Contact>(dto);
 
                 contact.Id = id;
@@ -136,9 +104,30 @@ namespace Orcamentaria.PersonService.Application.Services
                 if (!result.IsValid)
                     throw new ValidationException(result);
 
-                var entity = await _repository.Update(id, contact);
+                var entity = await _repository.UpdateAsync(id, contact);
 
                 return new Response<ContactResponseDTO>(_mapper.Map<Contact, ContactResponseDTO>(entity));
+            }
+            catch (DefaultException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new UnexpectedException(ex.Message, ex);
+            }
+        }
+
+        public async Task<Response<ContactResponseDTO>> DeleteAsync(long id)
+        {
+            try
+            {
+                if (await _repository.GetByIdAsync(id) is null)
+                    throw new InfoException($"O {id} nao foi encontrado.", ErrorCodeEnum.NotFound);
+
+                await _repository.DeleteAsync(id);
+
+                return new Response<ContactResponseDTO>();
             }
             catch (DefaultException)
             {

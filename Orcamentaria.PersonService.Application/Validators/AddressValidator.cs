@@ -19,7 +19,7 @@ namespace Orcamentaria.PersonService.Application.Validators
             _personRepository = personRepository;
         }
 
-        public AddressValidator() 
+        public void CommonValidation(Address entity) 
         {
             RuleFor(x => x.Street)
                 .NotEmpty().WithMessage("O {PropertyName} é obrigatório.")
@@ -48,8 +48,10 @@ namespace Orcamentaria.PersonService.Application.Validators
 
         public ValidationResult ValidateBeforeInsert(Address entity)
         {
+            CommonValidation(entity);
+
             RuleFor(x => x.Id)
-            .Empty().WithMessage("O {PropertyName} não deve ser informado.");
+                .Empty().WithMessage("O {PropertyName} não deve ser informado.");
 
             RuleFor(x => x.PersonId)
                .NotEmpty().WithMessage("O {PropertyName} é obrigatório.");
@@ -57,7 +59,7 @@ namespace Orcamentaria.PersonService.Application.Validators
             RuleFor(x => x.PersonId)
                 .Must((x, cancelation) =>
                 {
-                    var person = _personRepository.GetById(x.PersonId);
+                    var person = _personRepository.GetByIdAsync(x.PersonId).GetAwaiter().GetResult();
 
                     return person is not null;
 
@@ -72,24 +74,26 @@ namespace Orcamentaria.PersonService.Application.Validators
 
                 }).WithMessage("Limite de cadastrados atingido (4).");
 
-            return this.Validate(entity);
+            return Validate(entity);
         }
 
         public ValidationResult ValidateBeforeUpdate(Address entity)
         {
+            CommonValidation(entity);
+
             RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("O {PropertyName} deve ser informado.");
+                .NotEmpty().WithMessage("O {PropertyName} deve ser informado.");
 
             RuleFor(x => x.Id)
                 .Must((x, cancelation) =>
                 {
-                    var entity = _repository.GetById(x.Id);
+                    var entity = _repository.GetByIdAsync(x.Id).GetAwaiter().GetResult();
 
                     return entity is not null;
 
                 }).WithMessage("Id não encontrado.");
 
-            return this.Validate(entity);
+            return Validate(entity);
         }
     }
 }
