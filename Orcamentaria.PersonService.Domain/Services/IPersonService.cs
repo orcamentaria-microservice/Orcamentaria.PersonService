@@ -9,6 +9,7 @@ namespace Orcamentaria.PersonService.Domain.Services
     {
         Task<Person?> GetByIdAsync(long id);
         Task<Response<IEnumerable<PersonResponseDTO>>?> GetAsync(GridParams gridParams);
+        Task<Response<IEnumerable<PersonResponseDTO>>?> GetForServiceAsync(GridParams gridParams);
         Task<Response<PersonResponseDTO>> InsertAsync(PersonInsertDTO dto);
         Task<Response<PersonResponseDTO>> UpdateAsync(long id, PersonUpdateDTO dto);
     }

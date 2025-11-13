@@ -59,5 +59,19 @@ namespace Orcamentaria.PersonService.API.Controllers.v1
                 throw;
             }
         }
+
+        [Authorize(Policy = "ServicePolicy")]
+        [HttpPost("GetForService", Name = "PersonGetForService")]
+        public async Task<Response<IEnumerable<PersonResponseDTO>>?> GetForServiceAsync([FromBody] GridParams gridParams)
+        {
+            try
+            {
+                return await _service.GetForServiceAsync(gridParams);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }

@@ -3,7 +3,7 @@
     public enum PersonTypeEnum
     {
         Client = 1, 
-        Provider = 2, 
+        Supplier = 2, 
         Employee = 3
     }
 }

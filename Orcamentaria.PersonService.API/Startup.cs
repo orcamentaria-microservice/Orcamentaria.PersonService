@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
 using Orcamentaria.Lib.Domain.Validators;
-using Orcamentaria.Lib.Infrastructure;
+using Orcamentaria.Lib.Infrastructure.Configures;
 using Orcamentaria.PersonService.Application.Services;
 using Orcamentaria.PersonService.Application.Validators;
 using Orcamentaria.PersonService.Domain.Mappers;
@@ -25,15 +25,18 @@ namespace Orcamentaria.PersonService.API
 
         public void ConfigureServices(IServiceCollection services)
         {
-            Configuration = CommonDI.ResolveConfigs(_serviceName, services, Configuration);
+            Configuration = services.ResolveConfigs(Configuration, _serviceName);
 
             services.Replace(ServiceDescriptor.Singleton(Configuration));
 
-            CommonDI.AddServiceRegistryHosted(services, Configuration);
+            services.AddServiceRegistryHosted(Configuration);
 
-            CommonDI.ResolveCommonServicesWithMySql<MySqlContext>(_serviceName, _apiVersion, services, Configuration, () =>
+            services.ResolveCommonServicesWithMySql<MySqlContext>(configuration: Configuration,
+                serviceName: _serviceName,
+                apiVersion: _apiVersion,
+                customServices: () =>
             {
-                services.AddAutoMapper(
+                services.AddAutoMapper(_ => { },
                     typeof(PersonMapper), 
                     typeof(ContactMapper), 
                     typeof(AddressMapper), 
@@ -57,6 +60,6 @@ namespace Orcamentaria.PersonService.API
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-            => CommonDI.ConfigureCommon(_serviceName, _apiVersion, app, env);
+            => app.ConfigureCommon(env, _serviceName, _apiVersion);
     }
 }

@@ -30,6 +30,24 @@ namespace Orcamentaria.PersonService.Application.Services
             _mapper = mapper;
         }
 
+        public async Task<Person?> GetByIdAsync(long id)
+        {
+            try
+            {
+                return await _repository.GetByIdAsync(id,
+                    p => p.Contacts,
+                    p => p.Addresses);
+            }
+            catch (DefaultException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new UnexpectedException(ex.Message, ex);
+            }
+        }
+        
         public async Task<Response<IEnumerable<PersonResponseDTO>>?> GetAsync(GridParams gridParams)
         {
             try
@@ -54,13 +72,19 @@ namespace Orcamentaria.PersonService.Application.Services
             }
         }
 
-        public async Task<Person?> GetByIdAsync(long id)
+        public async Task<Response<IEnumerable<PersonResponseDTO>>?> GetForServiceAsync(GridParams gridParams)
         {
             try
             {
-                return await _repository.GetByIdAsync(id,
-                    p => p.Contacts,
-                    p => p.Addresses);
+                var (data, pagination) = await _repository.GetForServiceAsync(gridParams,
+                    p => p.Contacts.Where(p => p.Default),
+                    p => p.Addresses.Where(p => p.Default));
+
+                if (!data.Any())
+                    throw new InfoException($"Nenhum dado foi encontrado.", ErrorCodeEnum.NotFound);
+
+                return new Response<IEnumerable<PersonResponseDTO>>(
+                    data.Select(x => _mapper.Map<Person, PersonResponseDTO>(x)), pagination);
             }
             catch (DefaultException)
             {

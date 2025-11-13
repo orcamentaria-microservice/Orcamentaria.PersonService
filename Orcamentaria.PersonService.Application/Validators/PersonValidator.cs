@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
+using Orcamentaria.Lib.Domain.Models;
 using Orcamentaria.Lib.Domain.Validators;
 using Orcamentaria.PersonService.Domain.Enums;
 using Orcamentaria.PersonService.Domain.Models;
@@ -21,27 +22,136 @@ namespace Orcamentaria.PersonService.Application.Validators
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("O {PropertyName} é obrigatório.")
                 .MaximumLength(100).WithMessage("O tamanho máximo do {PropertyName} é de {MaxLength} caracteres.");
+
             RuleFor(x => x.Rg)
                 .Length(9).WithMessage("O {PropertyName} deve ter {MaxLength} caracteres.")
                 .Matches("^[0-9]+$")
                 .When(x => !string.IsNullOrEmpty(x.Rg))
-                .WithMessage("O {PropertyName} deve conter apenas números.");
+                .WithMessage("O {PropertyName} deve conter apenas números.")
+                .Must((x, cancelation) =>
+                {
+                    if (string.IsNullOrEmpty(x.Rg))
+                        return true;
+
+                    var gridParams = new GridParams
+                    {
+                        Filters = new List<FilterParam>
+                        {
+                            new FilterParam
+                            {
+                                Field = "Rg",
+                                Operator = "eq",
+                                Value = x.Rg
+                            }
+                        }
+                    };
+
+                    var (data, _) = _repository.GetAsync(gridParams).GetAwaiter().GetResult();
+
+                    // Se não encontrar nenhum RG igual cadastrado, retorna válido
+                    if (!data.Any())
+                        return true;
+
+                    // Se encontrar pelo menos um RG igual cadastrado e for um insert, retorna inválido
+                    if (x.Id == 0)
+                        return false;
+
+                    // Se encontrar pelo menos um RG igual cadastrado, for um update e estiver atualizando outra entidade, retorna inválido
+                    if (data.FirstOrDefault(p => p.Id == x.Id) is null)
+                        return false;
+
+                    // retorno padrão
+                    //Se encontrar pelo menos um RG igual cadastrado, for um update e estiver atualizando a mesma entidade encontrada, retorna válido
+                    return true;
+                }).WithMessage("Já possui um registro cadastrado com o mesmo valor do {PropertyName} informado.");
+            
             RuleFor(x => x.Cpf)
                 .Length(11).WithMessage("O {PropertyName} deve ter {MaxLength} caracteres.")
                 .Matches("^[0-9]+$")
                 .When(x => !string.IsNullOrEmpty(x.Cpf))
-                .WithMessage("O {PropertyName} deve conter apenas números.");
+                .WithMessage("O {PropertyName} deve conter apenas números.")
+                .Must((x, cancelation) =>
+                {
+                    if (string.IsNullOrEmpty(x.Cpf))
+                        return true;
+
+                    var gridParams = new GridParams
+                    {
+                        Filters = new List<FilterParam>
+                        {
+                            new FilterParam
+                            {
+                                Field = "Cpf",
+                                Operator = "eq",
+                                Value = x.Cpf
+                            }
+                        }
+                    };
+
+                    var (data, _) = _repository.GetAsync(gridParams).GetAwaiter().GetResult();
+
+                    // Se não encontrar nenhum CPF igual cadastrado, retorna válido
+                    if (!data.Any())
+                        return true;
+
+                    // Se encontrar pelo menos um CPF igual cadastrado e for um insert, retorna inválido
+                    if (x.Id == 0)
+                        return false;
+
+                    // Se encontrar pelo menos um CPF igual cadastrado, for um update e estiver atualizando outra entidade, retorna inválido
+                    if (data.FirstOrDefault(p => p.Id == x.Id) is null)
+                        return false;
+
+                    // retorno padrão
+                    //Se encontrar pelo menos um CPF igual cadastrado, for um update e estiver atualizando a mesma entidade encontrada, retorna válido
+                    return true;
+                }).WithMessage("Já possui um registro cadastrado com o mesmo valor do {PropertyName} informado.");
+            
             RuleFor(x => x.Cnpj)
-                .Length(9).WithMessage("O {PropertyName} deve ter {MaxLength} caracteres.")
+                .Length(14).WithMessage("O {PropertyName} deve ter {MaxLength} caracteres.")
                 .Matches("^[0-9]+$")
                 .When(x => !string.IsNullOrEmpty(x.Cnpj))
-                .WithMessage("O {PropertyName} deve conter apenas números.");
+                .WithMessage("O {PropertyName} deve conter apenas números.")
+                .Must((x, cancelation) =>
+                {
+                    if (string.IsNullOrEmpty(x.Cnpj))
+                        return true;
+
+                    var gridParams = new GridParams
+                    {
+                        Filters = new List<FilterParam>
+                        {
+                            new FilterParam
+                            {
+                                Field = "Cnpj",
+                                Operator = "eq",
+                                Value = x.Cnpj
+                            }
+                        }
+                    };
+
+                    var (data, _) = _repository.GetAsync(gridParams).GetAwaiter().GetResult();
+
+                    // Se não encontrar nenhum CNPJ igual cadastrado, retorna válido
+                    if (!data.Any())
+                        return true;
+
+                    // Se encontrar pelo menos um CNPJ igual cadastrado e for um insert, retorna inválido
+                    if (x.Id == 0)
+                        return false;
+
+                    // Se encontrar pelo menos um CNPJ igual cadastrado, for um update e estiver atualizando outra entidade, retorna inválido
+                    if (data.FirstOrDefault(p => p.Id == x.Id) is null)
+                        return false;
+
+                    // retorno padrão
+                    //Se encontrar pelo menos um CNPJ igual cadastrado, for um update e estiver atualizando a mesma entidade encontrada, retorna válido
+                    return true;
+                }).WithMessage("Já possui um registro cadastrado com o mesmo valor do {PropertyName} informado.");
+            
             RuleFor(x => x.Type)
                 .NotEmpty().WithMessage("O {PropertyName} é obrigatório.")
                 .Must(x => Enum.IsDefined(typeof(PersonTypeEnum), x)).WithMessage("O {PropertyName} é inválido.");
-            RuleFor(x => x.CompanyId)
-                .NotNull().WithMessage("O {PropertyName} é obrigatório.")
-                .GreaterThan(0).WithMessage("O {PropertyName} é inválido.");
         }
 
         public ValidationResult ValidateBeforeInsert(Person entity)
