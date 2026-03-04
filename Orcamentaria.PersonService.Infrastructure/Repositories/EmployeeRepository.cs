@@ -6,7 +6,7 @@ using Orcamentaria.PersonService.Infrastructure.Contexts;
 
 namespace Orcamentaria.PersonService.Infrastructure.Repositories
 {
-    public class EmployeeRepository : BasicRepository<Employee>, IEmployeeRepository
+    public class EmployeeRepository : BaseRepository<Employee>, IEmployeeRepository<Employee>
     {
         public EmployeeRepository(
             MySqlContext dbContext, 

@@ -9,12 +9,12 @@ namespace Orcamentaria.PersonService.Application.Validators
 {
     public class ContactValidator : AbstractValidator<Contact>, IValidatorEntity<Contact>
     {
-        private IContactRepository _repository;
-        private IPersonRepository _personRepository;
+        private IContactRepository<Contact> _repository;
+        private IPersonRepository<Person> _personRepository;
 
         public ContactValidator(
-            IContactRepository repository, 
-            IPersonRepository personRepository)
+            IContactRepository<Contact> repository, 
+            IPersonRepository<Person> personRepository)
         {
             _repository = repository;
             _personRepository = personRepository;

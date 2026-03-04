@@ -3,7 +3,6 @@ using Orcamentaria.Lib.Domain.Contexts;
 using Orcamentaria.Lib.Domain.Exceptions;
 using Orcamentaria.Lib.Domain.Models;
 using Orcamentaria.Lib.Domain.Models.Responses;
-using Orcamentaria.Lib.Infrastructure.Helpers;
 using Orcamentaria.Lib.Infrastructure.Repositories;
 using Orcamentaria.PersonService.Domain.Models;
 using Orcamentaria.PersonService.Domain.Repositories;
@@ -12,7 +11,7 @@ using System.Linq.Expressions;
 
 namespace Orcamentaria.PersonService.Infrastructure.Repositories
 {
-    public class PersonRepository : BasicRepository<Person>, IPersonRepository
+    public class PersonRepository : BaseRepository<Person>, IPersonRepository<Person>
     {
         private readonly MySqlContext _context;
 
@@ -33,11 +32,11 @@ namespace Orcamentaria.PersonService.Infrastructure.Repositories
                 foreach (var include in includes)
                     query = query.Include(include);
 
-                query = GridQueryHelper.ApplyFiltersWithoutCompanyId(query, gridParams.Filters);
+                query = ApplyFiltersWithoutCompanyIdWrapper(query, gridParams.Filters);
 
-                query = GridQueryHelper.ApplySorting(query, gridParams.SortField, gridParams.SortDesc ?? false);
+                query = ApplySortingWrapper(query, gridParams.SortField, gridParams.SortDesc ?? false);
 
-                var (page, pageSize, skip) = GridQueryHelper.NormalizePaging(gridParams.Page, gridParams.PageSize);
+                var (page, pageSize, skip) = NormalizePagingWrapper(gridParams.Page, gridParams.PageSize);
 
                 try
                 {

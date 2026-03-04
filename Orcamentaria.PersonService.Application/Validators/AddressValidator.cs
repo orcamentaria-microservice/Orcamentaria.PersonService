@@ -8,12 +8,12 @@ namespace Orcamentaria.PersonService.Application.Validators
 {
     public class AddressValidator : AbstractValidator<Address>, IValidatorEntity<Address>
     {
-        private readonly IAddressRepository _repository;
-        private IPersonRepository _personRepository;
+        private readonly IAddressRepository<Address> _repository;
+        private IPersonRepository<Person> _personRepository;
 
         public AddressValidator(
-            IAddressRepository repository, 
-            IPersonRepository personRepository)
+            IAddressRepository<Address> repository, 
+            IPersonRepository<Person> personRepository)
         {
             _repository = repository;
             _personRepository = personRepository;

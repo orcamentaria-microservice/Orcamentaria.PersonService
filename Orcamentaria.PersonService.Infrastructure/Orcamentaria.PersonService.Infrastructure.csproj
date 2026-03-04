@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.11" />
     <PackageReference Include="MySql.EntityFrameworkCore" Version="9.0.9" />
-    <PackageReference Include="Orcamentaria.Lib.Infrastructure" Version="5.3.2" />
+    <PackageReference Include="Orcamentaria.Lib.Infrastructure" Version="5.4.0" />
   </ItemGroup>
 
   <ItemGroup>

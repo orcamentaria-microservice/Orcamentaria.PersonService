@@ -1,10 +1,16 @@
-﻿using Orcamentaria.Lib.Domain.Repositories;
-using Orcamentaria.PersonService.Domain.Models;
+﻿using Orcamentaria.Lib.Domain.Models;
+using Orcamentaria.Lib.Domain.Models.Responses;
+using System.Linq.Expressions;
 
 namespace Orcamentaria.PersonService.Domain.Repositories
 {
-    public interface IContactRepository : IBasicRepository<Contact>
+    public interface IContactRepository<TEntity> where TEntity : class
     {
+        Task<TEntity?> GetByIdAsync(long id, params Expression<Func<TEntity, object>>[] includes);
+        Task<(IEnumerable<TEntity?>, ResponsePagination pagination)> GetAsync(GridParams gridParams, params Expression<Func<TEntity, object>>[] includes);
+        Task<TEntity> InsertAsync(TEntity entity);
+        Task<TEntity> UpdateAsync(long id, TEntity entity);
+        Task<TEntity> DeleteAsync(long id);
         int CountItems(long personId);
     }
 }

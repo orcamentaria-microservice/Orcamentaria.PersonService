@@ -15,12 +15,12 @@ namespace Orcamentaria.PersonService.Application.Services
 {
     public class PersonService : IPersonService
     {
-        private readonly IPersonRepository _repository;
+        private readonly IPersonRepository<Person> _repository;
         private readonly IValidatorEntity<Person> _validator;
         private readonly IMapper _mapper;
 
         public PersonService(
-            IPersonRepository repository, 
+            IPersonRepository<Person> repository, 
             IValidatorEntity<Person> validator,
             IMapper mapper,
             IRequestContext requestContext)

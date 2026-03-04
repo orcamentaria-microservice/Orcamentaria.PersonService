@@ -16,18 +16,15 @@ namespace Orcamentaria.PersonService.Application.Services
 {
     public class EmployeeService : IEmployeeService
     {
-        private readonly IUserAuthContext _userAuthContext;
-        private readonly IEmployeeRepository _repository;
+        private readonly IEmployeeRepository<Employee> _repository;
         private readonly IValidatorEntity<Employee> _validator;
         private readonly IMapper _mapper;
 
         public EmployeeService(
-            IUserAuthContext userAuthContext,
-            IEmployeeRepository repository, 
+            IEmployeeRepository<Employee> repository, 
             IValidatorEntity<Employee> validator,
             IMapper mapper)
         {
-            _userAuthContext = userAuthContext;
             _repository = repository;
             _validator = validator;
             _mapper = mapper;

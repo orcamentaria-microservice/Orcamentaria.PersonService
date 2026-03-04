@@ -14,12 +14,12 @@ namespace Orcamentaria.PersonService.Application.Services
 {
     public class ContactService : IContactService
     {
-        private readonly IContactRepository _repository;
+        private readonly IContactRepository<Contact> _repository;
         private readonly IValidatorEntity<Contact> _validator;
         private readonly IMapper _mapper;
 
         public ContactService(
-            IContactRepository repository,
+            IContactRepository<Contact> repository,
             IValidatorEntity<Contact> validator,
             IMapper mapper)
         {

@@ -7,7 +7,7 @@ using Orcamentaria.PersonService.Infrastructure.Contexts;
 
 namespace Orcamentaria.PersonService.Infrastructure.Repositories
 {
-    public class ContactRepository : BasicRepository<Contact>, IContactRepository
+    public class ContactRepository : BaseRepository<Contact>, IContactRepository<Contact>
     {
         private readonly MySqlContext _dbContext;
         private readonly IUserAuthContext _userAuthContext;

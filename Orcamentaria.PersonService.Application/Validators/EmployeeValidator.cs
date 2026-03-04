@@ -9,9 +9,9 @@ namespace Orcamentaria.PersonService.Application.Validators
 {
     public class EmployeeValidator : AbstractValidator<Employee>, IValidatorEntity<Employee>
     {
-        private readonly IEmployeeRepository _repository;
+        private readonly IEmployeeRepository<Employee> _repository;
 
-        public EmployeeValidator(IEmployeeRepository repository)
+        public EmployeeValidator(IEmployeeRepository<Employee> repository)
         {
             _repository = repository;
         }

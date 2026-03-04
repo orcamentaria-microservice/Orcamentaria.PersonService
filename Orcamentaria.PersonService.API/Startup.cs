@@ -47,10 +47,10 @@ namespace Orcamentaria.PersonService.API
                 services.AddScoped<IValidatorEntity<Address>, AddressValidator>();
                 services.AddScoped<IValidatorEntity<Employee>, EmployeeValidator>();
 
-                services.AddScoped<IPersonRepository, PersonRepository>();
-                services.AddScoped<IContactRepository, ContactRepository>();
-                services.AddScoped<IAddressRepository, AddressRepository>();
-                services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+                services.AddScoped<IPersonRepository<Person>, PersonRepository>();
+                services.AddScoped<IContactRepository<Contact>, ContactRepository>();
+                services.AddScoped<IAddressRepository<Address>, AddressRepository>();
+                services.AddScoped<IEmployeeRepository<Employee>, EmployeeRepository>();
 
                 services.AddScoped<IPersonService, Application.Services.PersonService>();
                 services.AddScoped<IContactService, ContactService>();
