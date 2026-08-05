@@ -139,11 +139,11 @@ A aplicação usa o modelo padrão de configuração do ASP.NET Core (`appsettin
 **`Orcamentaria.PersonService.API/appsettings.json`** define:
 - `Logging`: níveis padrão de log (`Default: Information`, `Microsoft.AspNetCore: Warning`);
 - `ApiGetawayConfiguration.BaseUrl`: endereço do `Orcamentaria.APIGetaway`, usado pela infraestrutura compartilhada para obter configuração remota e rotear chamadas de saída;
-- um valor de bootstrap (chave `BOOTSTRAPSECRET`) usado internamente pela biblioteca compartilhada para autenticar a busca de configuração remota do serviço junto ao ecossistema (o valor real não é reproduzido aqui por se tratar de segredo).
+- um valor de bootstrap (chave `BOOTSTRAPSECRET`) usado internamente pela biblioteca compartilhada para autenticar a busca de configuração remota do serviço junto ao `Orcamentaria.ConfigBagService` (o valor real não é reproduzido aqui por se tratar de segredo).
 
 **`Orcamentaria.PersonService.API/appsettings.Development.json`**: contém overrides de `Logging` para o ambiente de desenvolvimento.
 
-O `Startup.cs` também consome, via infraestrutura compartilhada, seções como `ServiceRegistryConfiguration` e `MessageBrokerConfiguration`, resolvidas/complementadas em tempo de execução a partir da configuração remota do ecossistema.
+As demais configurações do serviço — `ServiceRegistryConfiguration`, `MessageBrokerConfiguration`, `ServiceConfiguration` e a connection string do MySQL — não ficam no `appsettings.json` local: são buscadas no `ConfigBagService` via API Gateway durante o bootstrap. `ApiGetawayConfiguration.BaseUrl` e `BOOTSTRAPSECRET` são as exceções que permanecem locais, por serem o necessário para localizar o Gateway e se autenticar antes dessa busca.
 
 ---
 
@@ -268,7 +268,8 @@ O Swagger está habilitado em ambiente de desenvolvimento, acessível em `/swagg
 | Integração | Descrição |
 |---|---|
 | **Service Registry** | O serviço se registra e mantém heartbeat junto ao Service Registry, permitindo que o API Gateway descubra suas instâncias e endpoints. |
-| **API Gateway (`Orcamentaria.APIGetaway`)** | Endereço configurado em `ApiGetawayConfiguration.BaseUrl`, usado para obter configuração remota do serviço e como ponto de entrada para chamadas de outros serviços/clientes. |
+| **API Gateway (`Orcamentaria.APIGetaway`)** | Endereço configurado em `ApiGetawayConfiguration.BaseUrl`, usado como intermediário para a busca de configuração remota e como ponto de entrada para chamadas de outros serviços/clientes. |
+| **ConfigBagService** | Fonte centralizada da configuração do serviço (connection string, Service Registry, mensageria), buscada via API Gateway durante o bootstrap. |
 | **RabbitMQ** | Usado pela infraestrutura compartilhada para mensageria (publicação de mensagens e recebimento de atualizações de configuração em tempo real). |
 | **Serviços consumidores** | O endpoint `POST /api/v1/Person/GetForService`, protegido por `ServicePolicy`, foi criado especificamente para ser consumido por outros microsserviços do ecossistema que precisem de dados de pessoas. |
 
