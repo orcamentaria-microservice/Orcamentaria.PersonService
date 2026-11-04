@@ -39,7 +39,7 @@ namespace Orcamentaria.PersonService.Test.Repositories
         {
             var personId = 1;
 
-            _fixture.SeedInMemoryDatabase(_dbContext, 1, 2, 3, 4, 5);
+            _fixture.SeedInMemoryDatabaseWithIds(_dbContext, 1, 2, 3, 4, 5);
 
             var mockRepository = new Mock<ContactRepository>(_dbContext, _userAuthContext) { CallBase = true };
 

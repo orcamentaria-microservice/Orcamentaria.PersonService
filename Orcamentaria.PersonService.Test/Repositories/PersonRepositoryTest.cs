@@ -46,7 +46,7 @@ namespace Orcamentaria.PersonService.Test.Repositories
         {
             var mockRepository = new Mock<PersonRepository>(_dbContext, _userAuthContext) { CallBase = true };
 
-            await _fixture.SeedInMemoryDatabase(_dbContext, 1, 3, 6);
+            await _fixture.SeedInMemoryDatabaseWithIds(_dbContext, 1, 3, 6);
 
             var gridParams = _fixture.CreateGridParamsWithOneFilter(new FilterParam { Field = field, Operator = op, Value = value });
 
@@ -87,7 +87,7 @@ namespace Orcamentaria.PersonService.Test.Repositories
         {
             var mockRepository = new Mock<PersonRepository>(_dbContext, _userAuthContext) { CallBase = true };
 
-            await _fixture.SeedInMemoryDatabase(_dbContext, 1, 3, 6);
+            await _fixture.SeedInMemoryDatabaseWithIds(_dbContext, 1, 3, 6);
 
             var gridParams = _fixture.CreateGridParamsWithOneFilter(new FilterParam { Field = field, Operator = op, Value = value });
 
@@ -128,7 +128,7 @@ namespace Orcamentaria.PersonService.Test.Repositories
         {
             var mockRepository = new Mock<PersonRepository>(_dbContext, _userAuthContext) { CallBase = true };
 
-            await _fixture.SeedInMemoryDatabase(_dbContext, 1, 3, 6);
+            await _fixture.SeedInMemoryDatabaseWithIds(_dbContext, 1, 3, 6);
 
             var gridParams = _fixture.CreateGridParamsWithOneFilter(new FilterParam { Field = field, Operator = op, Value = value });
 
@@ -176,7 +176,7 @@ namespace Orcamentaria.PersonService.Test.Repositories
         {
             var mockRepository = new Mock<PersonRepository>(_dbContext, _userAuthContext) { CallBase = true };
 
-            await _fixture.SeedInMemoryDatabase(_dbContext, 1, 3, 6);
+            await _fixture.SeedInMemoryDatabaseWithIds(_dbContext, 1, 3, 6);
 
             var gridParams = _fixture.CreateGridParamsWithOneFilter(new FilterParam { Field = field, Operator = op, Value = value });
 
@@ -225,7 +225,7 @@ namespace Orcamentaria.PersonService.Test.Repositories
         {
             var mockRepository = new Mock<PersonRepository>(_dbContext, _userAuthContext) { CallBase = true };
 
-            await _fixture.SeedInMemoryDatabase(_dbContext, 1, 3, 6);
+            await _fixture.SeedInMemoryDatabaseWithIds(_dbContext, 1, 3, 6);
 
             var gridParams = _fixture.CreateGridParamsWithOneFilter(new FilterParam { Field = field, Operator = op, Value = value });
 

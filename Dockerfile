@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0 as build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 as build
 WORKDIR /src
 
 COPY ["Orcamentaria.PersonService.API/Orcamentaria.PersonService.API.csproj", "Orcamentaria.PersonService.API/"]
@@ -7,7 +7,6 @@ COPY ["Orcamentaria.PersonService.Domain/Orcamentaria.PersonService.Domain.cspro
 COPY ["Orcamentaria.PersonService.Infrastructure/Orcamentaria.PersonService.Infrastructure.csproj", "Orcamentaria.PersonService.Infrastructure/"]
 
 COPY nuget.config ./
-COPY local-packages ./local-packages
 
 RUN dotnet restore "Orcamentaria.PersonService.API/Orcamentaria.PersonService.API.csproj"
 
@@ -16,7 +15,7 @@ COPY . .
 WORKDIR "/src/Orcamentaria.PersonService.API"
 RUN dotnet publish -c Release -o /app/publish
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
 
