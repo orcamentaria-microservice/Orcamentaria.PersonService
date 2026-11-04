@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection.Extensions;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Orcamentaria.Lib.Domain.Validators;
 using Orcamentaria.Lib.Infrastructure.Configures;
 using Orcamentaria.PersonService.Application.Services;
@@ -60,6 +61,16 @@ namespace Orcamentaria.PersonService.API
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-            => app.ConfigureCommon(env, _serviceName, _apiVersion);
+        {
+            if (Configuration.GetValue<bool>("Database:MigrateOnStartup"))
+            {
+                var migrationsCs = Configuration.GetConnectionString("Migrations")
+                    ?? Configuration.GetConnectionString("DefaultConnection");
+                var options = new DbContextOptionsBuilder<DbContext>().UseMySQL(migrationsCs!).Options;
+                using var context = new MySqlContext(options);
+                context.Database.Migrate();
+            }
+            app.ConfigureCommon(env, _serviceName, _apiVersion);
+        }
     }
 }

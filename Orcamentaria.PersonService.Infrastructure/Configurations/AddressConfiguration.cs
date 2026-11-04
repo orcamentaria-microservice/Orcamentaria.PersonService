@@ -34,8 +34,8 @@ namespace Orcamentaria.PersonService.Infrastructure.Configurations
                 .HasColumnName("COMPLEMENT")
                 .HasColumnType("VARCHAR(45)");
 
-            builder.Property(p => p.Neihborhood)
-                .HasColumnName("NEIHBORHOOD")
+            builder.Property(p => p.Neighborhood)
+                .HasColumnName("NEIGHBORHOOD")
                 .HasColumnType("VARCHAR(100)")
                 .IsRequired();
 

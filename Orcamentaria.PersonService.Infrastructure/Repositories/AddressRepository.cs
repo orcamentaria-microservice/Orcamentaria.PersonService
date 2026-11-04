@@ -89,7 +89,7 @@ namespace Orcamentaria.PersonService.Infrastructure.Repositories
                     existing.ZipCode = entity.ZipCode;
                     existing.Number = entity.Number;
                     existing.Complement = entity.Complement;
-                    existing.Neihborhood = entity.Neihborhood;
+                    existing.Neighborhood = entity.Neighborhood;
                     existing.City = entity.City;
                     existing.State = entity.State;
                     existing.Uf = entity.Uf;
@@ -109,7 +109,7 @@ namespace Orcamentaria.PersonService.Infrastructure.Repositories
                     existing.ZipCode = entity.ZipCode;
                     existing.Number = entity.Number;
                     existing.Complement = entity.Complement;
-                    existing.Neihborhood = entity.Neihborhood;
+                    existing.Neighborhood = entity.Neighborhood;
                     existing.City = entity.City;
                     existing.State = entity.State;
                     existing.Uf = entity.Uf;
@@ -125,7 +125,7 @@ namespace Orcamentaria.PersonService.Infrastructure.Repositories
                 existing.ZipCode = entity.ZipCode;
                 existing.Number = entity.Number;
                 existing.Complement = entity.Complement;
-                existing.Neihborhood = entity.Neihborhood;
+                existing.Neighborhood = entity.Neighborhood;
                 existing.City = entity.City;
                 existing.State = entity.State;
                 existing.Uf = entity.Uf;

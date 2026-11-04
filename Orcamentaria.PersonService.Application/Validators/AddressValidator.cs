@@ -32,7 +32,7 @@ namespace Orcamentaria.PersonService.Application.Validators
                 .MaximumLength(6).WithMessage("O tamanho máximo de {PropertyName} é de {MaxLength} caracteres.");
             RuleFor(x => x.Complement)
                 .MaximumLength(45).WithMessage("O tamanho máximo de {PropertyName} é de {MaxLength} caracteres.");
-            RuleFor(x => x.Neihborhood)
+            RuleFor(x => x.Neighborhood)
                 .NotEmpty().WithMessage("O {PropertyName} é obrigatório.")
                 .MaximumLength(100).WithMessage("O tamanho máximo de {PropertyName} é de {MaxLength} caracteres.");
             RuleFor(x => x.City)

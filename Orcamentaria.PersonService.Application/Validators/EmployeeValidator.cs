@@ -21,13 +21,11 @@ namespace Orcamentaria.PersonService.Application.Validators
 
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("O {PropertyName} é obrigatório.")
-                .MaximumLength(100).WithMessage("O tamanho máximo do {PropertyName} é de {MaxLength} caracteres.");
+                .MaximumLength(70).WithMessage("O tamanho máximo do {PropertyName} é de {MaxLength} caracteres.");
             RuleFor(x => x.Rg)
                 .MaximumLength(9).WithMessage("O tamanho máximo do {PropertyName} é de {MaxLength} caracteres.");
             RuleFor(x => x.Cpf)
                 .MaximumLength(11).WithMessage("O tamanho máximo do {PropertyName} é de {MaxLength} caracteres.");
-            RuleFor(x => x.Rg)
-                .MaximumLength(14).WithMessage("O tamanho máximo do {PropertyName} é de {MaxLength} caracteres.");
             RuleFor(x => x.CompanyId)
                 .NotNull().WithMessage("O {PropertyName} é obrigatório.");
             RuleFor(x => x.Post)
