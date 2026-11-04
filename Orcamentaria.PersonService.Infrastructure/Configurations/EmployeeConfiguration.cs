@@ -21,7 +21,7 @@ namespace Orcamentaria.PersonService.Infrastructure.Configurations
 
             builder.Property(p => p.ValuePerDay)
                 .HasColumnName("VALUE_PER_DAY")
-                .HasColumnType("DOUBLE")
+                .HasPrecision(18, 2)
                 .IsRequired();
         }
     }

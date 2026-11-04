@@ -23,7 +23,7 @@ namespace Orcamentaria.PersonService.Test.Fixtures
                 State = Faker.Address.State(),
                 Uf = Faker.Address.StateAbbr(),
                 Complement = Faker.Address.SecondaryAddress(),
-                Neihborhood = Faker.Address.County(),
+                Neighborhood = Faker.Address.County(),
                 Default = Faker.Random.Bool(),
                 PersonId = 1,
                 CompanyId = 1,

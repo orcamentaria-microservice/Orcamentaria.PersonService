@@ -9,7 +9,7 @@ namespace Orcamentaria.PersonService.Domain.Models
         public string ZipCode { get; set; }
         public string Number { get; set; }
         public string Complement { get; set; }
-        public string Neihborhood { get; set; }
+        public string Neighborhood { get; set; }
         public string City { get; set; }
         public string State { get; set; }
         public string Uf { get; set; }
