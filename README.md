@@ -176,6 +176,20 @@ O diretório `mysql-init-scripts/create-person-db.sql` contém o script (gerado 
 
 ---
 
+## Configuração local
+
+Nenhum valor real deve existir nos arquivos versionados. Configure via `dotnet user-secrets` ou variáveis de ambiente:
+
+```bash
+dotnet user-secrets init --project Orcamentaria.PersonService.API
+dotnet user-secrets set "BOOTSTRAPSECRET" "<valor-do-bootstrapsecret>" --project Orcamentaria.PersonService.API
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=localhost;Port=3306;Database=person;User=<user>;Password=<senha>;SslMode=Disabled" --project Orcamentaria.PersonService.API
+```
+
+Ou crie `Orcamentaria.PersonService.API/appsettings.Development.json` (já ignorado pelo `.gitignore`) com os valores locais. Nunca commite esse arquivo.
+
+---
+
 ## ▶️ Como Executar
 
 ### Pré-requisitos
